@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APEngine — AI Tools for Educators</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--black:#0a0a0a;--charcoal:#1a1a1a;--gray-dark:#2a2a2a;--gray:#5a5a5a;--gray-mid:#8a8a8a;--gray-light:#c0c0c0;--off-white:#f5f5f5;--white:#ffffff;--accent:#0a0a0a;--accent-dim:#2a2a2a;--red:#8b4049;--red-light:#f5e8ea;--blue:#3d5a80;--blue-light:#e8edf3;--green:#4a6b4f;--green-light:#e9f0ea}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'IBM Plex Sans',sans-serif;font-weight:400;color:var(--black);background:var(--white);min-height:100vh;overflow-x:hidden;line-height:1.6}
+
+/* API BAR */
+.api-bar{background:var(--off-white);border-bottom:1px solid var(--gray-light);padding:10px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:200}
+.api-bar-label{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--gray);letter-spacing:1px;text-transform:uppercase}
+.api-bar input{flex:1;min-width:200px;max-width:360px;background:var(--white);border:1px solid var(--gray-light);padding:8px 12px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--black);outline:none}
+.api-bar input:focus{border-color:var(--black)}
+.api-status{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gray)}
+.api-status.ok{color:var(--black)}
+.api-link{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gray);text-decoration:none;margin-left:auto}
+.api-link:hover{color:var(--black)}
+
+/* HEADER */
+.site-header{background:var(--white);border-bottom:1px solid var(--gray-light);position:sticky;top:41px;z-index:100}
+.header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;padding:0 32px;height:72px}
+.logo{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;color:var(--black);letter-spacing:-0.5px;text-decoration:none;cursor:pointer}
+.logo span{color:var(--black)}
+nav{flex:1;display:flex;justify-content:flex-end;gap:2px}
+.nav-btn{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:400;color:var(--gray);background:transparent;border:none;padding:8px 16px;cursor:pointer;transition:color 0.2s;text-transform:uppercase;letter-spacing:0.5px}
+.nav-btn:hover{color:var(--black)}
+.nav-btn.active{color:var(--black);font-weight:600;border-bottom:2px solid var(--black)}
+
+/* LANDING PAGE */
+.landing{display:none;min-height:calc(100vh - 113px);position:relative;overflow:hidden}
+.landing.active{display:block}
+.bg-images{position:absolute;inset:0;z-index:0}
+.bg-img{position:absolute;inset:0;opacity:0;transition:opacity 2s ease-in-out;background-size:cover;background-position:center;filter:grayscale(100%)}
+.bg-img.active{opacity:0.03}
+.bg-img:nth-child(1){background-image:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"%3E%3Crect fill="%23ffffff" width="1200" height="800"/%3E%3Ctext x="50%25" y="50%25" font-family="serif" font-size="180" fill="%23e0e0e0" text-anchor="middle" dominant-baseline="middle"%3E1776%3C/text%3E%3C/svg%3E')}
+.bg-img:nth-child(2){background-image:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"%3E%3Crect fill="%23ffffff" width="1200" height="800"/%3E%3Cg opacity="0.3"%3E%3Ccircle cx="300" cy="400" r="150" fill="none" stroke="%23e0e0e0" stroke-width="1"/%3E%3Ccircle cx="600" cy="400" r="200" fill="none" stroke="%23e0e0e0" stroke-width="1"/%3E%3Ccircle cx="900" cy="400" r="150" fill="none" stroke="%23e0e0e0" stroke-width="1"/%3E%3C/g%3E%3C/svg%3E')}
+.bg-img:nth-child(3){background-image:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"%3E%3Crect fill="%23ffffff" width="1200" height="800"/%3E%3Cg opacity="0.3"%3E%3Cpath d="M0,400 Q300,300 600,400 T1200,400" fill="none" stroke="%23e0e0e0" stroke-width="1"/%3E%3Cpath d="M0,350 Q300,250 600,350 T1200,350" fill="none" stroke="%23e0e0e0" stroke-width="1"/%3E%3Cpath d="M0,450 Q300,350 600,450 T1200,450" fill="none" stroke="%23e0e0e0" stroke-width="1"/%3E%3C/g%3E%3C/svg%3E')}
+
+.landing-content{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:120px 32px 80px}
+.hero{max-width:900px;margin-bottom:120px}
+.hero-image{max-width:900px;margin-bottom:120px;border:1px solid var(--gray-light);padding:2px;background:var(--white);overflow:hidden}
+.hero-image img{width:100%;height:auto;display:block;filter:grayscale(30%) contrast(0.9);opacity:0.85}
+.hero-tag{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--black);letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;display:inline-block;border:1px solid var(--black);padding:6px 16px}
+.hero h1{font-family:'IBM Plex Mono',monospace;font-size:clamp(32px,6vw,72px);font-weight:600;line-height:1.1;letter-spacing:-1px;margin-bottom:28px;color:var(--black)}
+.hero-sub{font-size:18px;color:var(--gray);line-height:1.8;max-width:680px;margin-bottom:44px;font-weight:300}
+.cta-row{display:flex;gap:16px;flex-wrap:wrap}
+.btn{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;padding:14px 32px;border:1px solid;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--black);color:var(--white);border-color:var(--black)}
+.btn-primary:hover{background:var(--white);color:var(--black);border-color:var(--black)}
+.btn-secondary{background:transparent;color:var(--black);border-color:var(--gray-light)}
+.btn-secondary:hover{border-color:var(--black);color:var(--black)}
+
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:var(--black);border:1px solid var(--black);margin-bottom:120px}
+.feature{background:var(--white);padding:36px}
+.feature:nth-child(1) .feature-num{color:var(--red)}
+.feature:nth-child(2) .feature-num{color:var(--blue)}
+.feature:nth-child(3) .feature-num{color:var(--green)}
+.feature:nth-child(4) .feature-num{color:var(--black)}
+.feature-num{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gray);letter-spacing:2px;margin-bottom:16px;font-weight:600}
+.feature h3{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;color:var(--black);margin-bottom:12px;letter-spacing:-0.3px}
+.feature p{font-size:14px;color:var(--gray);line-height:1.7;font-weight:300}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:48px;padding:60px 0;border-top:1px solid var(--gray-light);border-bottom:1px solid var(--gray-light)}
+.stats>div:nth-child(1) .stat-num{color:var(--red)}
+.stats>div:nth-child(2) .stat-num{color:var(--blue)}
+.stats>div:nth-child(3) .stat-num{color:var(--green)}
+.stats>div:nth-child(4) .stat-num{color:var(--black)}
+.stat-num{font-family:'IBM Plex Mono',monospace;font-size:48px;font-weight:600;color:var(--black);line-height:1;margin-bottom:8px}
+.stat-label{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--gray);text-transform:uppercase;letter-spacing:1px}
+
+/* COURSE PAGES */
+.course-page{display:none;min-height:calc(100vh - 113px)}
+.course-page.active{display:block}
+.course-hero{background:var(--off-white);border-bottom:1px solid var(--gray-light);padding:48px 32px}
+.course-hero-inner{max-width:1400px;margin:0 auto}
+.course-tag{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--black);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;font-weight:600}
+.course-title{font-family:'IBM Plex Mono',monospace;font-size:clamp(24px,4vw,42px);font-weight:600;color:var(--black);margin-bottom:12px;letter-spacing:-0.5px}
+.course-desc{font-size:15px;color:var(--gray);max-width:720px;line-height:1.7;font-weight:300}
+
+.course-body{max-width:1400px;margin:0 auto;padding:48px 32px 80px}
+.tool-section{margin-bottom:64px}
+.section-header{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--black);text-transform:uppercase;letter-spacing:2px;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--gray-light)}
+
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1px;background:var(--black);border:1px solid var(--black)}
+.tool-card{background:var(--white);padding:28px;cursor:pointer;transition:background 0.2s}
+.tool-card:hover{background:var(--off-white)}
+.tool-card.red-accent{border-left:3px solid var(--red)}
+.tool-card.blue-accent{border-left:3px solid var(--blue)}
+.tool-card.green-accent{border-left:3px solid var(--green)}
+.tool-card.red-accent:hover{background:var(--red-light)}
+.tool-card.blue-accent:hover{background:var(--blue-light)}
+.tool-card.green-accent:hover{background:var(--green-light)}
+.tool-icon{font-size:28px;margin-bottom:16px}
+.tool-name{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;color:var(--black);margin-bottom:8px;letter-spacing:-0.3px}
+.tool-desc{font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:16px;font-weight:300}
+.tool-meta{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:1px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(255,255,255,0.95);z-index:500;display:none;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border:2px solid var(--black);width:100%;max-width:1100px;max-height:90vh;display:flex;flex-direction:column}
+.modal-header{padding:24px 32px;border-bottom:1px solid var(--gray-light);display:flex;align-items:center;gap:16px}
+.modal-icon{font-size:24px}
+.modal-title{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;color:var(--black);flex:1;letter-spacing:-0.3px}
+.modal-close{width:32px;height:32px;background:transparent;border:1px solid var(--gray-light);color:var(--gray);cursor:pointer;font-size:16px;transition:all 0.2s;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{border-color:var(--black);color:var(--black)}
+.modal-body{display:grid;grid-template-columns:1fr 1fr;flex:1;overflow:hidden}
+@media(max-width:768px){.modal-body{grid-template-columns:1fr}}
+.modal-form{padding:32px;overflow-y:auto;border-right:1px solid var(--gray-light)}
+.modal-output-area{display:flex;flex-direction:column;overflow:hidden}
+.output-toolbar{padding:16px 24px;border-bottom:1px solid var(--gray-light);display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--off-white)}
+.output-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:1px}
+.output-actions{display:flex;gap:8px}
+.btn-sm{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 16px;background:transparent;border:1px solid var(--gray-light);color:var(--black);cursor:pointer;transition:all 0.2s;text-transform:uppercase;letter-spacing:0.5px}
+.btn-sm:hover{border-color:var(--black);color:var(--black)}
+.output-content{flex:1;padding:24px;overflow-y:auto;font-size:14px;line-height:1.8;color:var(--black)}
+.output-content h2{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;color:var(--black);margin:24px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--gray-light)}
+.output-content h2:first-child{margin-top:0}
+.output-content h3{font-size:14px;font-weight:600;color:var(--black);margin:16px 0 8px}
+.output-content ul{padding-left:20px;margin:12px 0}
+.output-content li{margin-bottom:6px}
+.output-content strong{font-weight:600;color:var(--black)}
+
+.form-group{margin-bottom:20px}
+.form-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;display:block;font-weight:600}
+.form-label span{font-weight:400;color:var(--gray);text-transform:none}
+textarea,select,input[type="text"]{width:100%;background:var(--white);border:1px solid var(--gray-light);padding:10px 12px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;color:var(--black);outline:none;resize:vertical}
+textarea{min-height:100px}
+textarea:focus,select:focus,input:focus{border-color:var(--black)}
+select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235a5a5a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+.checkbox-list{display:flex;flex-direction:column;gap:10px}
+.checkbox-row{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:var(--gray);line-height:1.5}
+.checkbox-row input[type="checkbox"]{width:16px;height:16px;flex-shrink:0;margin-top:2px;cursor:pointer;accent-color:var(--black)}
+.btn-generate{width:100%;padding:14px 24px;background:var(--black);color:var(--white);border:none;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:all 0.2s;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-generate:hover{background:var(--charcoal)}
+.btn-generate:disabled{opacity:0.4;cursor:not-allowed}
+
+.output-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;color:var(--gray);text-align:center;padding:40px}
+.output-placeholder svg{opacity:0.3;margin-bottom:16px}
+.output-placeholder p{font-size:13px;line-height:1.6}
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:280px;gap:16px;color:var(--gray)}
+.spinner{width:32px;height:32px;border:2px solid var(--gray-light);border-top-color:var(--black);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:768px){
+  .hero h1{font-size:36px}
+  .features-grid{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .tools-grid{grid-template-columns:1fr}
+  .modal-form{border-right:none;border-bottom:1px solid var(--gray-dark)}
+}
+</style>
+</head>
+<body>
+
+<div class="api-bar">
+  <span class="api-bar-label">API Key</span>
+  <input type="password" id="apiKey" placeholder="sk-ant-..." oninput="checkApiKey()">
+  <span class="api-status" id="apiStatus">Enter key</span>
+  <a href="https://console.anthropic.com" target="_blank" class="api-link">Get Key ↗</a>
+</div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo" onclick="showPage('landing')">AP<span>Engine</span></div>
+    <nav>
+      <button class="nav-btn" onclick="showPage('landing')">Home</button>
+      <button class="nav-btn" onclick="showPage('ap-courses')">AP Courses</button>
+      <button class="nav-btn" onclick="showPage('standard-courses')">Standard Courses</button>
+      <button class="nav-btn" onclick="showPage('shared')">Shared Tools</button>
+      <button class="nav-btn" onclick="openSourceLibrary()">📚 Sources</button>
+    </nav>
+  </div>
+</header>
+
+<div class="landing active" id="page-landing">
+  <div class="bg-images">
+    <div class="bg-img active"></div>
+    <div class="bg-img"></div>
+    <div class="bg-img"></div>
+  </div>
+  <div class="landing-content">
+    <div class="hero">
+      <div class="hero-tag">AI-Powered Education</div>
+      <h1>Professional teaching materials. Generated in seconds.</h1>
+      <p class="hero-sub">Standards-aligned scaffolds, worksheets, differentiation tools, and multilingual support for AP and standard courses. Built for educators who value precision and efficiency.</p>
+      <div class="cta-row">
+        <button class="btn btn-primary" onclick="showPage('ap-courses')">Explore AP Tools</button>
+        <button class="btn btn-secondary" onclick="showPage('standard-courses')">Standard Courses</button>
+      </div>
+    </div>
+
+    <div class="hero-image">
+      <img id="heroImage" src="" alt="NASA Earth Imagery" loading="lazy">
+    </div>
+
+    <div class="features-grid">
+      <div class="feature"><div class="feature-num">[01]</div><h3>Standards-Aligned Scaffolds</h3><p>DBQ, LEQ, SAQ, FRQ builders aligned to College Board rubrics. Thesis workshops, sourcing charts, complexity options.</p></div>
+      <div class="feature"><div class="feature-num">[02]</div><h3>Reading Differentiation</h3><p>Transform any text into multiple versions: simplified, ELL-modified, graphic organizers, IEP-friendly formats.</p></div>
+      <div class="feature"><div class="feature-num">[03]</div><h3>Multilingual Support</h3><p>Bilingual documents, vocabulary glossaries, and sentence stems in 12+ languages for ELL students and families.</p></div>
+      <div class="feature"><div class="feature-num">[04]</div><h3>Primary Source Library</h3><p>Pre-loaded historical documents, foundational texts, and SCOTUS cases — no copy-paste required.</p></div>
+    </div>
+
+    <div class="stats">
+      <div><div class="stat-num">13</div><div class="stat-label">Courses Supported</div></div>
+      <div><div class="stat-num">40+</div><div class="stat-label">Tool Types</div></div>
+      <div><div class="stat-num">12</div><div class="stat-label">Languages</div></div>
+      <div><div class="stat-num">∞</div><div class="stat-label">Materials Generated</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="course-page" id="page-ap-courses">
+  <div class="course-hero">
+    <div class="course-hero-inner">
+      <div class="course-tag">Advanced Placement</div>
+      <h2 class="course-title">AP Course Tools</h2>
+      <p class="course-desc">College Board-aligned tools for all major AP courses. DBQ scaffolds, FRQ builders, primary source analysis, and rubric-aligned materials designed for exam success.</p>
+    </div>
+  </div>
+  <div class="course-body">
+    <div class="tool-section">
+      <div class="section-header">Select Your AP Course</div>
+      <div class="tools-grid">
+        <div class="tool-card red-accent" onclick="alert('Full course coming soon!')"><div class="tool-icon">🌍</div><div class="tool-name">AP World History</div><div class="tool-desc">DBQ, LEQ, SAQ scaffolds. CCOT analysis. HAPP sourcing. Units 1–9 aligned.</div><div class="tool-meta">8 Tools Available</div></div>
+        <div class="tool-card red-accent" onclick="alert('Full course coming soon!')"><div class="tool-icon">🇺🇸</div><div class="tool-name">AP US History</div><div class="tool-desc">Period reviews (1–9). DBQ document analysis. Comparison essay builder.</div><div class="tool-meta">7 Tools Available</div></div>
+        <div class="tool-card blue-accent" onclick="alert('Full course coming soon!')"><div class="tool-icon">⚖️</div><div class="tool-name">AP Government & Politics</div><div class="tool-desc">9 foundational documents. 15 SCOTUS cases. All 4 FRQ types covered.</div><div class="tool-meta">5 Tools Available</div></div>
+        <div class="tool-card green-accent" onclick="alert('Full course coming soon!')"><div class="tool-icon">📚</div><div class="tool-name">AP Literature</div><div class="tool-desc">Poetry, prose, literary argument scaffolds. Close reading. Thesis workshop.</div><div class="tool-meta">6 Tools Available</div></div>
+        <div class="tool-card green-accent" onclick="alert('Full course coming soon!')"><div class="tool-icon">✍️</div><div class="tool-name">AP Language & Composition</div><div class="tool-desc">Rhetorical analysis. Synthesis essay. Argument essay scaffolds and rubrics.</div><div class="tool-meta">6 Tools Available</div></div>
+        <div class="tool-card red-accent" onclick="alert('Full course coming soon!')"><div class="tool-icon">🏛️</div><div class="tool-name">AP European History</div><div class="tool-desc">DBQ, LEQ, SAQ for European contexts. Period reviews. Document analysis.</div><div class="tool-meta">7 Tools Available</div></div>
+        <div class="tool-card blue-accent" onclick="alert('Full course coming soon!')"><div class="tool-icon">🧠</div><div class="tool-name">AP Psychology</div><div class="tool-desc">FRQ scaffolds. Study design analysis. Research method worksheets.</div><div class="tool-meta">5 Tools Available</div></div>
+        <div class="tool-card green-accent" onclick="alert('Full course coming soon!')"><div class="tool-icon">🌱</div><div class="tool-name">AP Environmental Science</div><div class="tool-desc">Data analysis FRQs. Design & analyze. Math practice. Lab report scaffolds.</div><div class="tool-meta">5 Tools Available</div></div>
+        <div class="tool-card red-accent" onclick="alert('Full course coming soon!')"><div class="tool-icon">✊</div><div class="tool-name">AP African American Studies</div><div class="tool-desc">Primary source analysis. Essay scaffolds. Historical period organizers.</div><div class="tool-meta">6 Tools Available</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="course-page" id="page-standard-courses">
+  <div class="course-hero">
+    <div class="course-hero-inner">
+      <div class="course-tag">Standard Curriculum</div>
+      <h2 class="course-title">Standard Course Tools</h2>
+      <p class="course-desc">Comprehensive tools for non-AP high school courses. Essay scaffolds, reading differentiation, primary source analysis, and culturally responsive materials.</p>
+    </div>
+  </div>
+  <div class="course-body">
+    <div class="tool-section">
+      <div class="section-header">Select Your Course</div>
+      <div class="tools-grid">
+        <div class="tool-card red-accent" onclick="alert('Full course coming soon!')"><div class="tool-icon">🌏</div><div class="tool-name">World History</div><div class="tool-desc">Essay scaffolds, primary source worksheets, and CCOT organizers for standard world history.</div><div class="tool-meta">7 Tools Available</div></div>
+        <div class="tool-card red-accent" onclick="alert('Full course coming soon!')"><div class="tool-icon">🗽</div><div class="tool-name">US History</div><div class="tool-desc">Document analysis, period organizers, and essay builders for standard US history courses.</div><div class="tool-meta">7 Tools Available</div></div>
+        <div class="tool-card blue-accent" onclick="alert('Full course coming soon!')"><div class="tool-icon">🏛️</div><div class="tool-name">Government / Economics</div><div class="tool-desc">Civics worksheets, policy analysis, foundational document study, and economic concepts.</div><div class="tool-meta">6 Tools Available</div></div>
+        <div class="tool-card green-accent" onclick="alert('Full course coming soon!')"><div class="tool-icon">🌐</div><div class="tool-name">Ethnic Studies</div><div class="tool-desc">Culturally responsive materials, identity exploration, systemic analysis, and primary sources.</div><div class="tool-meta">6 Tools Available</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="course-page" id="page-shared">
+  <div class="course-hero">
+    <div class="course-hero-inner">
+      <div class="course-tag">Universal Tools</div>
+      <h2 class="course-title">Shared Tools</h2>
+      <p class="course-desc">Course-agnostic tools that work for any subject. Worksheet generation, reading differentiation, multilingual support, rubrics, and sentence frames.</p>
+    </div>
+  </div>
+  <div class="course-body">
+    <div class="tool-section">
+      <div class="section-header">Worksheet & Scaffold Tools</div>
+      <div class="tools-grid">
+        <div class="tool-card green-accent" onclick="alert('Tool coming soon!')"><div class="tool-icon">📚</div><div class="tool-name">Lesson Plan Generator</div><div class="tool-desc">Complete lesson plans with objectives, standards alignment, activities, assessments, and differentiation strategies.</div><div class="tool-meta">Any Subject · Any Grade</div></div>
+        <div class="tool-card blue-accent" onclick="alert('Tool coming soon!')"><div class="tool-icon">📝</div><div class="tool-name">Quiz & Assessment Builder</div><div class="tool-desc">Multiple choice, short answer, matching, true/false questions with answer keys and Bloom's taxonomy alignment.</div><div class="tool-meta">Auto-Graded · Standards-Aligned</div></div>
+        <div class="tool-card red-accent" onclick="alert('Tool coming soon!')"><div class="tool-icon">✍️</div><div class="tool-name">Grading Helper</div><div class="tool-desc">Comment banks, personalized feedback generator, rubric scoring assistance, and grade justification templates.</div><div class="tool-meta">Saves Hours · Personalized</div></div>
+        <div class="tool-card" onclick="alert('Tool coming soon!')"><div class="tool-icon">📋</div><div class="tool-name">Worksheet Generator</div><div class="tool-desc">Vocabulary, annotation guide, text-dependent questions, sentence frames, rubric checklist — all from any text.</div><div class="tool-meta">Any Subject</div></div>
+        <div class="tool-card" onclick="alert('Tool coming soon!')"><div class="tool-icon">✅</div><div class="tool-name">Rubric Builder</div><div class="tool-desc">Create custom scoring rubrics or self-assessment checklists for any assignment type.</div><div class="tool-meta">Essay · Project · Discussion</div></div>
+        <div class="tool-card" onclick="alert('Tool coming soon!')"><div class="tool-icon">💬</div><div class="tool-name">Sentence Frame Generator</div><div class="tool-desc">Academic sentence stems for claim-making, evidence, analysis, discussion — customizable by level.</div><div class="tool-meta">ELL · Academic Language</div></div>
+      </div>
+    </div>
+    <div class="tool-section">
+      <div class="section-header">Reading Differentiation</div>
+      <div class="tools-grid">
+        <div class="tool-card" onclick="alert('Tool coming soon!')"><div class="tool-icon">🔽</div><div class="tool-name">Text Differentiator</div><div class="tool-desc">Generate standard, simplified, ELL, graphic organizer, and IEP versions of any passage at once.</div><div class="tool-meta">All Levels</div></div>
+        <div class="tool-card" onclick="alert('Tool coming soon!')"><div class="tool-icon">📖</div><div class="tool-name">Vocabulary Support</div><div class="tool-desc">Tiered vocabulary lists with definitions, examples, word forms, and Frayer model organizers.</div><div class="tool-meta">Tier 2 & 3</div></div>
+      </div>
+    </div>
+    <div class="tool-section">
+      <div class="section-header">Multilingual & Translation</div>
+      <div class="tools-grid">
+        <div class="tool-card" onclick="alert('Tool coming soon!')"><div class="tool-icon">🌐</div><div class="tool-name">Multilingual Resource Pack</div><div class="tool-desc">Bilingual documents, glossaries, and sentence stems in 12+ languages for ELL students.</div><div class="tool-meta">12 Languages</div></div>
+        <div class="tool-card" onclick="alert('Tool coming soon!')"><div class="tool-icon">✉️</div><div class="tool-name">Family Communication</div><div class="tool-desc">Translate parent letters, syllabi, permission slips, and announcements for multilingual families.</div><div class="tool-meta">School–Home</div></div>
+        <div class="tool-card" onclick="alert('Tool coming soon!')"><div class="tool-icon">🔤</div><div class="tool-name">Plain Language Simplifier</div><div class="tool-desc">Rewrite complex academic text at lower Lexile levels while preserving all content and meaning.</div><div class="tool-meta">IEP · ELL</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="toolModal" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-icon" id="modalIcon">📜</div>
+      <div class="modal-title" id="modalTitle">Tool Name</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-form" id="modalForm"></div>
+      <div class="modal-output-area">
+        <div class="output-toolbar">
+          <span class="output-label">Output</span>
+          <div class="output-actions">
+            <button class="btn-sm" onclick="copyOutput()">Copy</button>
+            <button class="btn-sm" onclick="printOutput()">Print</button>
+          </div>
+        </div>
+        <div class="output-content" id="modalOutput">
+          <div class="output-placeholder">
+            <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <p>Fill in the form and generate.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="sourceLibrary" onclick="handleSourceLibraryClick(event)">
+  <div class="modal" style="max-width:1200px">
+    <div class="modal-header">
+      <div class="modal-icon">📚</div>
+      <div class="modal-title">Primary Source Library</div>
+      <button class="modal-close" onclick="closeSourceLibrary()">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:250px 1fr;height:70vh">
+      <div style="border-right:1px solid var(--gray-light);overflow-y:auto;padding:24px">
+        <div style="margin-bottom:24px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;font-weight:600">Filter By Course</div>
+          <select id="sourceFilter" onchange="filterSources()" style="width:100%;margin-bottom:16px">
+            <option value="all">All Sources</option>
+            <optgroup label="AP Courses">
+              <option value="ap-world">AP World History</option>
+              <option value="ap-us">AP US History</option>
+              <option value="ap-gov">AP Government</option>
+              <option value="ap-lit">AP Literature</option>
+            </optgroup>
+            <optgroup label="Standard Courses">
+              <option value="world">World History</option>
+              <option value="us">US History</option>
+              <option value="gov-econ">Government / Economics</option>
+              <option value="ethnic-studies">Ethnic Studies</option>
+            </optgroup>
+          </select>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;font-weight:600">Categories</div>
+        <div id="sourceCategories"></div>
+      </div>
+      <div style="overflow-y:auto;padding:32px" id="sourceList">
+        <p style="color:var(--gray)">Select a category or use the filter above to browse sources.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// PRIMARY SOURCE LIBRARY DATABASE - College Board CED Aligned
+const PRIMARY_SOURCES = {
+  'ap-world': [
+    // UNIT 1: The Global Tapestry (1200-1450)
+    {
+      id: 'world-1',
+      title: 'Sundiata: An Epic of Old Mali (oral tradition, 13th century)',
+      period: 'Unit 1: The Global Tapestry (1200–1450)',
+      author: 'Oral tradition (griots)',
+      date: 'c. 1200s',
+      context: 'Epic poem about Sundiata Keita, founder of the Mali Empire, transmitted orally by griots.',
+      excerpt: 'Listen then, sons of Mali, children of the black people, listen to my word, for I am going to tell you of Sundiata, the father of the Bright Country, of the savanna land, the ancestor of those who draw the bow, the master of a hundred vanquished kings. I am going to talk of Sundiata, Manding Diara, Lion of Mali, Sogolon Djata, son of Sogolon, Nare Maghan Djata, sorcerer-king, he who made the hosts tremble, master of all the lands.',
+      tags: ['Mali Empire', 'West Africa', 'oral tradition', 'Mansa']
+    },
+    {
+      id: 'world-2',
+      title: 'The Tale of Genji (excerpt, c. 1010)',
+      period: 'Unit 1: The Global Tapestry (1200–1450)',
+      author: 'Murasaki Shikibu',
+      date: 'c. 1010',
+      context: 'Japanese novel from the Heian period, one of the world\'s first novels, depicting court life.',
+      excerpt: 'In a certain reign there was a lady not of the first rank whom the emperor loved more than any of the others. The grand ladies with high ambitions thought her a presumptuous upstart, and lesser ladies were still more resentful. Everything she did offended someone. Probably aware of what was happening, she fell seriously ill and came to spend more time at home than at court.',
+      tags: ['Japan', 'Heian period', 'court culture', 'literature']
+    },
+    {
+      id: 'world-3',
+      title: 'Zhu Xi on Neo-Confucianism (12th century)',
+      period: 'Unit 1: The Global Tapestry (1200–1450)',
+      author: 'Zhu Xi',
+      date: 'c. 1175',
+      context: 'Chinese philosopher synthesizing Confucian thought, influencing Song Dynasty and East Asia.',
+      excerpt: 'The nature of man is originally good. However, because the physical form is not perfect, one\'s nature becomes obscured. Through learning and self-cultivation, one can recover the original goodness. The investigation of things leads to the extension of knowledge; the extension of knowledge leads to sincerity of thought; sincerity of thought leads to rectification of the mind.',
+      tags: ['Neo-Confucianism', 'Song Dynasty', 'philosophy', 'China']
+    },
+    
+    // UNIT 2: Networks of Exchange (1200-1450)
+    {
+      id: 'world-4',
+      title: 'Ibn Battuta\'s Travels (1355)',
+      period: 'Unit 2: Networks of Exchange (1200–1450)',
+      author: 'Ibn Battuta',
+      date: '1355',
+      context: 'Moroccan scholar and explorer who traveled 75,000 miles across Africa, Asia, and Europe over 30 years.',
+      excerpt: 'I left Tangier, my birthplace, on Thursday, 2nd Rajab 725 [June 14, 1325], being at that time twenty-two years of age, with the intention of making the Pilgrimage to the Holy House at Mecca and the Tomb of the Prophet at Medina. I set out alone, finding no companion to cheer the way with friendly intercourse, and no party of travelers with whom to associate myself. Swayed by an overmastering impulse within me, and a long-cherished desire to visit those glorious sanctuaries, I resolved to quit all my friends and tear myself away from my home.',
+      tags: ['trade', 'travel', 'cross-cultural exchange', 'Islamic world', 'Dar al-Islam']
+    },
+    {
+      id: 'world-5',
+      title: 'The Travels of Marco Polo (1298)',
+      period: 'Unit 2: Networks of Exchange (1200–1450)',
+      author: 'Marco Polo',
+      date: '1298',
+      context: 'Venetian merchant\'s account of travels along the Silk Roads to China and the Mongol Empire.',
+      excerpt: 'When the Great Khan holds his grand court, every man takes his place in an order arranged long beforehand. The sons of kings, princes, and nobles are seated at tables in the great hall. The ladies also are seated in a similar manner. At the great feast, the Great Khan sits at the head of the hall on the north side, so that he faces the south. On his right side sits the Empress, and below her the ladies of the household.',
+      tags: ['Silk Roads', 'Mongol Empire', 'trade', 'Yuan Dynasty', 'Kublai Khan']
+    },
+    {
+      id: 'world-6',
+      title: 'Description of the World by Zheng He (15th century)',
+      period: 'Unit 2: Networks of Exchange (1200–1450)',
+      author: 'Accounts of Zheng He\'s voyages',
+      date: '1405-1433',
+      context: 'Chinese admiral\'s massive maritime expeditions through Indian Ocean trade networks.',
+      excerpt: 'The Emperor ordered the expeditions to sail to the Western Ocean. The treasure ships carried silk goods, porcelain, and other goods to trade. They visited more than 30 countries, from Java to the east coast of Africa. The foreign kings sent ambassadors with tribute of local goods, precious stones, and exotic animals to the Ming court.',
+      tags: ['Ming Dynasty', 'Indian Ocean', 'maritime trade', 'China', 'treasure fleet']
+    },
+    
+    // UNIT 3: Land-Based Empires (1450-1750)
+    {
+      id: 'world-7',
+      title: 'Accounts of the Conquest of Mexico (1519-1521)',
+      period: 'Unit 3: Land-Based Empires (1450–1750)',
+      author: 'Indigenous accounts',
+      date: '1519-1521',
+      context: 'Nahua accounts of Spanish conquest, perspective of the conquered.',
+      excerpt: 'And when they came out of the palace of Axayacatl, they were dressed in the garments of our gods. The first to come out was Motecuhzoma. He was splendidly dressed in the regalia of the gods. All the people wept when they saw him thus attired, for he was the image of our ancient gods.',
+      tags: ['Aztec Empire', 'Spanish conquest', 'indigenous perspective', 'colonization']
+    },
+    {
+      id: 'world-8',
+      title: 'Akbar\'s Policies of Religious Toleration (16th century)',
+      period: 'Unit 3: Land-Based Empires (1450–1750)',
+      author: 'Abul Fazl (court historian)',
+      date: 'c. 1590',
+      context: 'Mughal Emperor Akbar\'s policies promoting religious harmony in India.',
+      excerpt: 'His Majesty has granted permission to all religions to practice their faith freely. Brahmins and holy men of all sects have freedom of worship. The jizya tax on non-Muslims has been abolished. Learned men of all religions debate freely at court. The emperor seeks truth from all traditions - Hindu, Muslim, Jain, Christian, and Zoroastrian.',
+      tags: ['Mughal Empire', 'religious toleration', 'Akbar', 'India', 'syncretic']
+    },
+    {
+      id: 'world-9',
+      title: 'Suleiman the Magnificent on Ottoman Law (16th century)',
+      period: 'Unit 3: Land-Based Empires (1450–1750)',
+      author: 'Ottoman legal codes',
+      date: 'c. 1520-1566',
+      context: 'Legal reforms under Suleiman codifying Ottoman administration and justice.',
+      excerpt: 'All subjects shall be treated justly regardless of faith. Christians and Jews under our protection shall pay the jizya tax but retain their own laws and courts. Provincial governors must maintain order and collect taxes fairly. Any governor who oppresses the people shall be removed and punished.',
+      tags: ['Ottoman Empire', 'Islamic law', 'millet system', 'Suleiman', 'devshirme']
+    },
+    
+    // UNIT 4: Transoceanic Interconnections (1450-1750)
+    {
+      id: 'world-10',
+      title: 'Christopher Columbus\'s Letter to Luis de Santangel (1493)',
+      period: 'Unit 4: Transoceanic Interconnections (1450–1750)',
+      author: 'Christopher Columbus',
+      date: 'February 15, 1493',
+      context: 'Columbus reports his first voyage to the Americas to Spanish officials.',
+      excerpt: 'I discovered many islands inhabited by numerous people. I took possession of all of them for our most fortunate King by making public proclamation and unfurling his standard. The lands are fertile and filled with gold. The people go naked and are very timid. They have no weapons and are so guileless and generous with all that they possess that no one would believe it who has not seen it.',
+      tags: ['Columbian Exchange', 'exploration', 'colonization', 'Americas']
+    },
+    {
+      id: 'world-11',
+      title: 'Bartolomé de las Casas: A Short Account of the Destruction of the Indies (1542)',
+      period: 'Unit 4: Transoceanic Interconnections (1450–1750)',
+      author: 'Bartolomé de las Casas',
+      date: '1542',
+      context: 'Spanish friar\'s account criticizing Spanish treatment of indigenous peoples.',
+      excerpt: 'The Christians, with their horses and swords and lances, began to slaughter and practice strange cruelties among them. They penetrated into the country and spared neither children nor the aged, nor pregnant women, nor those in childbirth, all of whom they ran through the body and lacerated, as though they were assaulting so many lambs herded in their sheepfold.',
+      tags: ['Spanish colonization', 'indigenous peoples', 'human rights', 'encomienda']
+    },
+    {
+      id: 'world-12',
+      title: 'Olaudah Equiano: The Interesting Narrative (1789)',
+      period: 'Unit 4: Transoceanic Interconnections (1450–1750)',
+      author: 'Olaudah Equiano',
+      date: '1789',
+      context: 'Enslaved African\'s autobiography describing the Middle Passage and slavery.',
+      excerpt: 'The first object which saluted my eyes when I arrived on the coast was the sea, and a slave ship. These filled me with astonishment, which was soon converted into terror. I was immediately handled and tossed up to see if I were sound, by some of the crew; and I was now persuaded that I had gotten into a world of bad spirits, and that they were going to kill me.',
+      tags: ['Atlantic slave trade', 'Middle Passage', 'slavery', 'abolition', 'African diaspora']
+    },
+    
+    // UNIT 5: Revolutions (1750-1900)
+    {
+      id: 'world-13',
+      title: 'Declaration of the Rights of Man and of the Citizen (1789)',
+      period: 'Unit 5: Revolutions (1750–1900)',
+      author: 'National Assembly of France',
+      date: 'August 26, 1789',
+      context: 'Fundamental document of the French Revolution defining individual and collective rights.',
+      excerpt: 'The representatives of the French people, constituted as a National Assembly, have determined to set forth in a solemn declaration the natural, inalienable and sacred rights of man. Article 1: Men are born and remain free and equal in rights. Social distinctions may be based only on common utility.',
+      tags: ['French Revolution', 'Enlightenment', 'natural rights', 'liberalism']
+    },
+    {
+      id: 'world-14',
+      title: 'Simón Bolívar: Letter from Jamaica (1815)',
+      period: 'Unit 5: Revolutions (1750–1900)',
+      author: 'Simón Bolívar',
+      date: 'September 6, 1815',
+      context: 'South American revolutionary leader\'s vision for Latin American independence.',
+      excerpt: 'We are a microcosm of the human race. We are a world apart, confined within two oceans, young in arts and sciences. We are neither Europeans nor Indians, but a species midway between the legitimate proprietors of this country and the Spanish usurpers. It is impossible to say to which human family we belong.',
+      tags: ['Latin American independence', 'nationalism', 'creole', 'liberation']
+    },
+    {
+      id: 'world-15',
+      title: 'Haitian Declaration of Independence (1804)',
+      period: 'Unit 5: Revolutions (1750–1900)',
+      author: 'Jean-Jacques Dessalines',
+      date: 'January 1, 1804',
+      context: 'Declaration following the only successful slave revolt in history.',
+      excerpt: 'It is not enough to have expelled the barbarians who have bloodied our land for two centuries. We must ensure by a final act that we guarantee forever the empire of liberty in the country of our birth. We must live independent or die. Independence or death!',
+      tags: ['Haitian Revolution', 'slave revolt', 'independence', 'Caribbean']
+    },
+    
+    // UNIT 6: Consequences of Industrialization (1750-1900)
+    {
+      id: 'world-16',
+      title: 'Adam Smith: The Wealth of Nations (1776)',
+      period: 'Unit 6: Consequences of Industrialization (1750–1900)',
+      author: 'Adam Smith',
+      date: '1776',
+      context: 'Foundational text of classical economics advocating free markets.',
+      excerpt: 'It is not from the benevolence of the butcher, the brewer, or the baker that we expect our dinner, but from their regard to their own interest. Every individual is continually exerting himself to find out the most advantageous employment for whatever capital he can command. By pursuing his own interest he frequently promotes that of the society more effectually than when he really intends to promote it.',
+      tags: ['capitalism', 'free market', 'Enlightenment', 'economics', 'invisible hand']
+    },
+    {
+      id: 'world-17',
+      title: 'Karl Marx and Friedrich Engels: The Communist Manifesto (1848)',
+      period: 'Unit 6: Consequences of Industrialization (1750–1900)',
+      author: 'Karl Marx and Friedrich Engels',
+      date: '1848',
+      context: 'Socialist critique of capitalism and call for proletarian revolution.',
+      excerpt: 'The history of all hitherto existing society is the history of class struggles. Freeman and slave, patrician and plebeian, lord and serf, guild-master and journeyman, in a word, oppressor and oppressed, stood in constant opposition to one another. The proletarians have nothing to lose but their chains. They have a world to win. Workers of the world, unite!',
+      tags: ['socialism', 'communism', 'class struggle', 'industrialization', 'Marx']
+    },
+    {
+      id: 'world-18',
+      title: 'Letter from Lin Zexu to Queen Victoria (1839)',
+      period: 'Unit 6: Consequences of Industrialization (1750–1900)',
+      author: 'Lin Zexu (Imperial Commissioner)',
+      date: '1839',
+      context: 'Chinese official\'s letter protesting British opium trade before the Opium Wars.',
+      excerpt: 'We have heard that in your honorable nation smoking opium is strictly forbidden. This means you are aware of how harmful it is. Since you do not permit it to injure your own country, you ought not to have this injurious drug transferred to another country. The Way of Heaven is fairness to all.',
+      tags: ['Opium Wars', 'imperialism', 'China', 'Qing Dynasty', 'trade']
+    },
+    
+    // UNIT 7: Global Conflict (1900-present)
+    {
+      id: 'world-19',
+      title: 'Woodrow Wilson: Fourteen Points (1918)',
+      period: 'Unit 7: Global Conflict (1900–present)',
+      author: 'Woodrow Wilson',
+      date: 'January 8, 1918',
+      context: 'US President\'s vision for post-WWI peace and international order.',
+      excerpt: 'What we demand is that the world be made fit and safe to live in. The program of the world\'s peace is our program: Open covenants openly arrived at, freedom of navigation upon the seas, the removal of economic barriers, reduction of national armaments, and a general association of nations must be formed.',
+      tags: ['WWI', 'League of Nations', 'self-determination', 'diplomacy']
+    },
+    {
+      id: 'world-20',
+      title: 'Vladimir Lenin: What Is to Be Done? (1902)',
+      period: 'Unit 7: Global Conflict (1900–present)',
+      author: 'Vladimir Lenin',
+      date: '1902',
+      context: 'Lenin\'s theory of revolutionary vanguard party leading to Bolshevik Revolution.',
+      excerpt: 'We must train people who will dedicate the whole of their lives to the revolution. We must have a centralized organization of professional revolutionaries. Only a strong revolutionary organization can guarantee the energy, stability, and continuity of the political struggle.',
+      tags: ['Russian Revolution', 'Bolsheviks', 'communism', 'Lenin', 'vanguard']
+    },
+    
+    // UNIT 8: Cold War and Decolonization (1900-present)
+    {
+      id: 'world-21',
+      title: 'Mohandas Gandhi on Nonviolent Resistance (1920s)',
+      period: 'Unit 8: Cold War & Decolonization (1900–present)',
+      author: 'Mohandas Gandhi',
+      date: 'c. 1920s',
+      context: 'Gandhi\'s philosophy of satyagraha (nonviolent resistance) against British rule.',
+      excerpt: 'Nonviolence is the greatest force at the disposal of mankind. It is mightier than the mightiest weapon of destruction devised by the ingenuity of man. An eye for an eye only ends up making the whole world blind. We must be the change we wish to see in the world.',
+      tags: ['Indian independence', 'nonviolence', 'civil disobedience', 'Gandhi', 'satyagraha']
+    },
+    {
+      id: 'world-22',
+      title: 'Ho Chi Minh: Declaration of Independence of Vietnam (1945)',
+      period: 'Unit 8: Cold War & Decolonization (1900–present)',
+      author: 'Ho Chi Minh',
+      date: 'September 2, 1945',
+      context: 'Vietnamese declaration of independence from France after WWII.',
+      excerpt: 'All men are created equal. They are endowed by their Creator with certain inalienable rights; among these are Life, Liberty, and the pursuit of Happiness. All the peoples on earth are equal from birth, all the peoples have a right to live, to be happy and free. Vietnam has the right to be a free and independent country.',
+      tags: ['decolonization', 'Vietnam', 'independence', 'self-determination', 'Cold War']
+    },
+    
+    // UNIT 9: Globalization (1900-present)
+    {
+      id: 'world-23',
+      title: 'Universal Declaration of Human Rights (1948)',
+      period: 'Unit 9: Globalization (1900–present)',
+      author: 'United Nations General Assembly',
+      date: 'December 10, 1948',
+      context: 'International statement of fundamental human rights after WWII.',
+      excerpt: 'All human beings are born free and equal in dignity and rights. They are endowed with reason and conscience and should act towards one another in a spirit of brotherhood. Everyone has the right to life, liberty and security of person. No one shall be held in slavery or servitude.',
+      tags: ['human rights', 'United Nations', 'international law', 'post-WWII']
+    }
+  ],
+  
+  'ap-us': [
+    // PERIOD 1: 1491-1607
+    {
+      id: 'us-1',
+      title: 'Aztec Account of the Conquest (c. 1520s)',
+      period: 'Period 1: Contact & Conquest (1491–1607)',
+      author: 'Indigenous Nahua accounts',
+      date: 'c. 1520s',
+      context: 'Native perspective on Spanish arrival and conquest of Mexico.',
+      excerpt: 'Motecuhzoma enjoyed no sleep, no food. No one spoke to him. He seemed to be in great torment. He did nothing but sigh. He felt weak. He felt weak. He no longer enjoyed anything that gave him pleasure.',
+      tags: ['pre-Columbian', 'Spanish conquest', 'indigenous perspective']
+    },
+    {
+      id: 'us-2',
+      title: 'Christopher Columbus\'s Journal (1492)',
+      period: 'Period 1: Contact & Conquest (1491–1607)',
+      author: 'Christopher Columbus',
+      date: 'October 12, 1492',
+      context: 'Columbus\'s first encounter with indigenous peoples in the Caribbean.',
+      excerpt: 'They ought to make good and skilled servants, for they repeat very quickly whatever we say to them. I think they can easily be made Christians, for they seem to have no religion. With fifty men we could subjugate them all and make them do whatever we want.',
+      tags: ['exploration', 'Columbian Exchange', 'first contact', 'colonization']
+    },
+    
+    // PERIOD 2: 1607-1754
+    {
+      id: 'us-3',
+      title: 'John Winthrop: "A Model of Christian Charity" (1630)',
+      period: 'Period 2: Colonial America (1607–1754)',
+      author: 'John Winthrop',
+      date: '1630',
+      context: 'Puritan leader\'s sermon aboard the Arbella describing Massachusetts Bay Colony\'s mission.',
+      excerpt: 'We shall be as a city upon a hill. The eyes of all people are upon us. So that if we shall deal falsely with our God in this work we have undertaken, we shall be made a story and a byword through the world.',
+      tags: ['Puritans', 'Massachusetts Bay', 'religious mission', 'exceptionalism']
+    },
+    {
+      id: 'us-4',
+      title: 'Nathaniel Bacon\'s Declaration (1676)',
+      period: 'Period 2: Colonial America (1607–1754)',
+      author: 'Nathaniel Bacon',
+      date: '1676',
+      context: 'Declaration during Bacon\'s Rebellion against Virginia colonial government.',
+      excerpt: 'For having protected, favored, and emboldened the Indians against His Majesty\'s most loyal subjects. For having upon specious pretenses of public works raised unjust taxes upon the commonalty.',
+      tags: ['Bacon\'s Rebellion', 'colonial conflict', 'Virginia', 'class tension']
+    },
+    {
+      id: 'us-5',
+      title: 'Jonathan Edwards: "Sinners in the Hands of an Angry God" (1741)',
+      period: 'Period 2: Colonial America (1607–1754)',
+      author: 'Jonathan Edwards',
+      date: 'July 8, 1741',
+      context: 'Famous sermon from the Great Awakening religious revival.',
+      excerpt: 'The God that holds you over the pit of hell, much as one holds a spider or some loathsome insect over the fire, abhors you, and is dreadfully provoked. There is no other reason to be given why you have not gone to hell since you have sat here in the house of God.',
+      tags: ['Great Awakening', 'religious revival', 'Puritanism', 'evangelicalism']
+    },
+    
+    // PERIOD 3: 1754-1800
+    {
+      id: 'us-6',
+      title: 'The Declaration of Independence (1776)',
+      period: 'Period 3: Revolution & Constitution (1754–1800)',
+      author: 'Thomas Jefferson (primary author)',
+      date: 'July 4, 1776',
+      context: 'The founding document declaring American independence from Great Britain.',
+      excerpt: 'We hold these truths to be self-evident, that all men are created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness. That to secure these rights, Governments are instituted among Men, deriving their just powers from the consent of the governed.',
+      tags: ['Revolution', 'founding documents', 'natural rights', 'Enlightenment']
+    },
+    {
+      id: 'us-7',
+      title: 'Thomas Paine: Common Sense (1776)',
+      period: 'Period 3: Revolution & Constitution (1754–1800)',
+      author: 'Thomas Paine',
+      date: 'January 1776',
+      context: 'Pamphlet arguing for American independence from Britain.',
+      excerpt: 'The cause of America is in a great measure the cause of all mankind. We have it in our power to begin the world over again. A situation, similar to the present, hath not happened since the days of Noah until now. The birthday of a new world is at hand.',
+      tags: ['Revolution', 'independence', 'republicanism', 'pamphlet']
+    },
+    {
+      id: 'us-8',
+      title: 'The Federalist No. 10 (1787)',
+      period: 'Period 3: Revolution & Constitution (1754–1800)',
+      author: 'James Madison',
+      date: 'November 22, 1787',
+      context: 'Defense of the Constitution arguing for a large republic to control factions.',
+      excerpt: 'By a faction, I understand a number of citizens, whether amounting to a majority or a minority of the whole, who are united and actuated by some common impulse of passion, or of interest, adversed to the rights of other citizens. Liberty is to faction what air is to fire.',
+      tags: ['Constitution', 'federalism', 'factions', 'republic']
+    },
+    {
+      id: 'us-9',
+      title: 'Abigail Adams: "Remember the Ladies" Letter (1776)',
+      period: 'Period 3: Revolution & Constitution (1754–1800)',
+      author: 'Abigail Adams',
+      date: 'March 31, 1776',
+      context: 'Letter to John Adams during Constitutional deliberations advocating for women\'s rights.',
+      excerpt: 'I desire you would Remember the Ladies, and be more generous and favourable to them than your ancestors. Do not put such unlimited power into the hands of the Husbands. Remember all Men would be tyrants if they could. If particular care and attention is not paid to the Ladies we are determined to foment a Rebellion.',
+      tags: ['women\'s rights', 'Revolutionary era', 'gender', 'republican motherhood']
+    },
+    
+    // PERIOD 4: 1800-1848
+    {
+      id: 'us-10',
+      title: 'Thomas Jefferson: First Inaugural Address (1801)',
+      period: 'Period 4: Expanding Nation (1800–1848)',
+      author: 'Thomas Jefferson',
+      date: 'March 4, 1801',
+      context: 'Jefferson\'s vision for the new republic after the Revolution of 1800.',
+      excerpt: 'Every difference of opinion is not a difference of principle. We are all Republicans, we are all Federalists. If there be any among us who would wish to dissolve this Union or to change its republican form, let them stand undisturbed as monuments of the safety with which error of opinion may be tolerated where reason is left free to combat it.',
+      tags: ['Jeffersonian democracy', 'political parties', 'Revolution of 1800']
+    },
+    {
+      id: 'us-11',
+      title: 'Seneca Falls Declaration of Sentiments (1848)',
+      period: 'Period 4: Expanding Nation (1800–1848)',
+      author: 'Elizabeth Cady Stanton',
+      date: 'July 19-20, 1848',
+      context: 'Declaration from the first women\'s rights convention.',
+      excerpt: 'We hold these truths to be self-evident: that all men and women are created equal. The history of mankind is a history of repeated injuries and usurpations on the part of man toward woman, having in direct object the establishment of an absolute tyranny over her.',
+      tags: ['women\'s rights', 'reform', 'suffrage', 'antebellum']
+    },
+    {
+      id: 'us-12',
+      title: 'Frederick Douglass: "What to the Slave is the Fourth of July?" (1852)',
+      period: 'Period 4: Expanding Nation (1800–1848)',
+      author: 'Frederick Douglass',
+      date: 'July 5, 1852',
+      context: 'Speech critiquing American hypocrisy on slavery.',
+      excerpt: 'What, to the American slave, is your 4th of July? I answer: a day that reveals to him, more than all other days in the year, the gross injustice and cruelty to which he is the constant victim. To him, your celebration is a sham; your boasted liberty, an unholy license; your national greatness, swelling vanity.',
+      tags: ['abolitionism', 'slavery', 'civil rights', 'rhetoric']
+    },
+    {
+      id: 'us-13',
+      title: 'Cherokee Nation v. Georgia (1831)',
+      period: 'Period 4: Expanding Nation (1800–1848)',
+      author: 'Cherokee Nation petition',
+      date: '1831',
+      context: 'Cherokee legal challenge to Indian Removal Act.',
+      excerpt: 'The Cherokee nation is a distinct political society, separated from others, capable of managing its own affairs and governing itself. They have always been considered as a distinct, independent, political community, retaining their original natural rights.',
+      tags: ['Indian Removal', 'Cherokee', 'sovereignty', 'Trail of Tears']
+    },
+    
+    // PERIOD 5: 1844-1877
+    {
+      id: 'us-14',
+      title: 'Abraham Lincoln: Gettysburg Address (1863)',
+      period: 'Period 5: Civil War & Reconstruction (1844–1877)',
+      author: 'Abraham Lincoln',
+      date: 'November 19, 1863',
+      context: 'Short speech redefining the Civil War as a struggle for equality and democracy.',
+      excerpt: 'Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal. It is for us the living to be dedicated to the great task remaining before us—that this nation, under God, shall have a new birth of freedom.',
+      tags: ['Civil War', 'equality', 'Union', 'liberty']
+    },
+    {
+      id: 'us-15',
+      title: 'The Emancipation Proclamation (1863)',
+      period: 'Period 5: Civil War & Reconstruction (1844–1877)',
+      author: 'Abraham Lincoln',
+      date: 'January 1, 1863',
+      context: 'Executive order freeing enslaved people in Confederate states.',
+      excerpt: 'All persons held as slaves within any State or designated part of a State, the people whereof shall then be in rebellion against the United States, shall be then, thenceforward, and forever free.',
+      tags: ['Civil War', 'slavery', 'emancipation', 'executive power']
+    },
+    {
+      id: 'us-16',
+      title: 'The 13th, 14th, and 15th Amendments (1865-1870)',
+      period: 'Period 5: Civil War & Reconstruction (1844–1877)',
+      author: 'U.S. Congress',
+      date: '1865-1870',
+      context: 'Reconstruction Amendments abolishing slavery and establishing civil rights.',
+      excerpt: '13th: Neither slavery nor involuntary servitude shall exist. 14th: All persons born or naturalized in the United States are citizens. No state shall deprive any person of life, liberty, or property without due process of law. 15th: The right of citizens to vote shall not be denied on account of race, color, or previous condition of servitude.',
+      tags: ['Reconstruction', 'civil rights', 'amendments', 'citizenship']
+    },
+    
+    // PERIOD 6: 1865-1898
+    {
+      id: 'us-17',
+      title: 'Andrew Carnegie: "The Gospel of Wealth" (1889)',
+      period: 'Period 6: Gilded Age (1865–1898)',
+      author: 'Andrew Carnegie',
+      date: '1889',
+      context: 'Industrialist\'s justification of wealth inequality and philanthropy.',
+      excerpt: 'The man who dies rich dies disgraced. The problem of our age is the proper administration of wealth, so that the ties of brotherhood may still bind together the rich and poor. The best means of benefiting the community is to place within its reach the ladders upon which the aspiring can rise.',
+      tags: ['Gilded Age', 'wealth inequality', 'philanthropy', 'Social Darwinism']
+    },
+    {
+      id: 'us-18',
+      title: 'Plessy v. Ferguson Dissent (1896)',
+      period: 'Period 6: Gilded Age (1865–1898)',
+      author: 'Justice John Marshall Harlan',
+      date: '1896',
+      context: 'Dissenting opinion against "separate but equal" doctrine.',
+      excerpt: 'Our Constitution is color-blind, and neither knows nor tolerates classes among citizens. In respect of civil rights, all citizens are equal before the law. The arbitrary separation of citizens on the basis of race is a badge of servitude wholly inconsistent with the civil freedom and the equality before the law established by the Constitution.',
+      tags: ['segregation', 'Jim Crow', 'civil rights', 'Supreme Court']
+    },
+    
+    // PERIOD 7: 1890-1945
+    {
+      id: 'us-19',
+      title: 'Jane Addams: Twenty Years at Hull House (1910)',
+      period: 'Period 7: Progressive Era Through WWII (1890–1945)',
+      author: 'Jane Addams',
+      date: '1910',
+      context: 'Settlement house founder\'s account of Progressive Era reform work.',
+      excerpt: 'The Settlement then is an experimental effort to aid in the solution of the social and industrial problems which are engendered by the modern conditions of life in a great city. It provides a center for a higher civic and social life. It initiates and maintains educational and philanthropic enterprises.',
+      tags: ['Progressivism', 'settlement house', 'reform', 'immigration']
+    },
+    {
+      id: 'us-20',
+      title: 'W.E.B. Du Bois: "The Souls of Black Folk" (1903)',
+      period: 'Period 7: Progressive Era Through WWII (1890–1945)',
+      author: 'W.E.B. Du Bois',
+      date: '1903',
+      context: 'Analysis of African American experience and critique of Booker T. Washington.',
+      excerpt: 'The problem of the twentieth century is the problem of the color-line. One ever feels his two-ness—an American, a Negro; two souls, two thoughts, two unreconciled strivings; two warring ideals in one dark body. The history of the American Negro is the history of this strife.',
+      tags: ['civil rights', 'double consciousness', 'race', 'NAACP']
+    },
+    {
+      id: 'us-21',
+      title: 'Franklin D. Roosevelt: First Inaugural Address (1933)',
+      period: 'Period 7: Progressive Era Through WWII (1890–1945)',
+      author: 'Franklin D. Roosevelt',
+      date: 'March 4, 1933',
+      context: 'FDR\'s address during Great Depression outlining New Deal philosophy.',
+      excerpt: 'The only thing we have to fear is fear itself. This Nation asks for action, and action now. We must act and act quickly. I shall ask the Congress for broad Executive power to wage a war against the emergency, as great as the power that would be given to me if we were in fact invaded by a foreign foe.',
+      tags: ['Great Depression', 'New Deal', 'executive power', 'economic crisis']
+    },
+    
+    // PERIOD 8: 1945-1980
+    {
+      id: 'us-22',
+      title: 'Brown v. Board of Education (1954)',
+      period: 'Period 8: Cold War America (1945–1980)',
+      author: 'Chief Justice Earl Warren',
+      date: 'May 17, 1954',
+      context: 'Supreme Court decision declaring school segregation unconstitutional.',
+      excerpt: 'We conclude that in the field of public education the doctrine of "separate but equal" has no place. Separate educational facilities are inherently unequal. To separate children solely because of their race generates a feeling of inferiority that may affect their hearts and minds in a way unlikely ever to be undone.',
+      tags: ['civil rights', 'desegregation', 'Supreme Court', 'equal protection']
+    },
+    {
+      id: 'us-23',
+      title: 'Martin Luther King Jr.: "Letter from Birmingham Jail" (1963)',
+      period: 'Period 8: Cold War America (1945–1980)',
+      author: 'Martin Luther King Jr.',
+      date: 'April 16, 1963',
+      context: 'Defense of nonviolent civil disobedience against segregation.',
+      excerpt: 'Injustice anywhere is a threat to justice everywhere. We are caught in an inescapable network of mutuality, tied in a single garment of destiny. I am cognizant of the interrelatedness of all communities and states. One has a moral responsibility to disobey unjust laws.',
+      tags: ['civil rights', 'nonviolence', 'civil disobedience', 'justice']
+    },
+    {
+      id: 'us-24',
+      title: 'Betty Friedan: The Feminine Mystique (1963)',
+      period: 'Period 8: Cold War America (1945–1980)',
+      author: 'Betty Friedan',
+      date: '1963',
+      context: 'Book sparking second-wave feminism critiquing suburban domesticity.',
+      excerpt: 'The problem lay buried, unspoken, for many years in the minds of American women. It was a strange stirring, a sense of dissatisfaction, a yearning that women suffered in the middle of the twentieth century. Each suburban wife struggled with it alone as she made the beds, shopped for groceries, chauffeured Cub Scouts and Brownies.',
+      tags: ['feminism', 'women\'s rights', 'gender roles', 'domesticity']
+    },
+    
+    // PERIOD 9: 1980-present
+    {
+      id: 'us-25',
+      title: 'Ronald Reagan: First Inaugural Address (1981)',
+      period: 'Period 9: Contemporary America (1980–present)',
+      author: 'Ronald Reagan',
+      date: 'January 20, 1981',
+      context: 'Conservative revolution speech promoting limited government.',
+      excerpt: 'In this present crisis, government is not the solution to our problem; government is the problem. It is time to check and reverse the growth of government which shows signs of having grown beyond the consent of the governed.',
+      tags: ['conservatism', 'Reagan', 'limited government', 'Cold War']
+    }
+  ],
+  
+  'ap-gov': [
+    {
+      id: 'gov-1',
+      title: 'The Declaration of Independence (1776)',
+      period: '9 Foundational Documents',
+      author: 'Thomas Jefferson (primary author)',
+      date: 'July 4, 1776',
+      context: 'Founding document establishing principles of natural rights and popular sovereignty.',
+      excerpt: 'We hold these truths to be self-evident, that all men are created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness.--That to secure these rights, Governments are instituted among Men, deriving their just powers from the consent of the governed.',
+      tags: ['natural rights', 'social contract', 'founding', 'popular sovereignty']
+    },
+    {
+      id: 'gov-2',
+      title: 'The Constitution of the United States (1787)',
+      period: '9 Foundational Documents',
+      author: 'Constitutional Convention',
+      date: 'September 17, 1787',
+      context: 'Supreme law establishing structure of government and federalism.',
+      excerpt: 'We the People of the United States, in Order to form a more perfect Union, establish Justice, insure domestic Tranquility, provide for the common defence, promote the general Welfare, and secure the Blessings of Liberty to ourselves and our Posterity, do ordain and establish this Constitution for the United States of America.',
+      tags: ['Constitution', 'federalism', 'separation of powers', 'checks and balances']
+    },
+    {
+      id: 'gov-3',
+      title: 'Federalist No. 10 (1787)',
+      period: '9 Foundational Documents',
+      author: 'James Madison',
+      date: 'November 22, 1787',
+      context: 'Essay arguing for a large republic to control factions.',
+      excerpt: 'Among the numerous advantages promised by a well-constructed Union, none deserves to be more accurately developed than its tendency to break and control the violence of faction. By a faction, I understand a number of citizens, whether amounting to a majority or a minority of the whole, who are united and actuated by some common impulse of passion, or of interest, adversed to the rights of other citizens.',
+      tags: ['factions', 'republic', 'pluralism', 'Madison']
+    },
+    {
+      id: 'gov-4',
+      title: 'Federalist No. 51 (1788)',
+      period: '9 Foundational Documents',
+      author: 'James Madison',
+      date: 'February 6, 1788',
+      context: 'Essay explaining separation of powers and checks and balances.',
+      excerpt: 'If men were angels, no government would be necessary. If angels were to govern men, neither external nor internal controls on government would be necessary. In framing a government which is to be administered by men over men, the great difficulty lies in this: you must first enable the government to control the governed; and in the next place oblige it to control itself.',
+      tags: ['separation of powers', 'checks and balances', 'human nature', 'ambition']
+    },
+    {
+      id: 'gov-5',
+      title: 'Federalist No. 70 (1788)',
+      period: '9 Foundational Documents',
+      author: 'Alexander Hamilton',
+      date: 'March 15, 1788',
+      context: 'Essay defending strong executive power.',
+      excerpt: 'Energy in the Executive is a leading character in the definition of good government. A feeble Executive implies a feeble execution of the government. A single magistrate is most likely to possess the energy required for the vigorous execution of the laws.',
+      tags: ['executive power', 'presidency', 'energy', 'Hamilton']
+    },
+    {
+      id: 'gov-6',
+      title: 'Federalist No. 78 (1788)',
+      period: '9 Foundational Documents',
+      author: 'Alexander Hamilton',
+      date: 'May 28, 1788',
+      context: 'Essay defending judicial review and independent judiciary.',
+      excerpt: 'The interpretation of the laws is the proper and peculiar province of the courts. Whoever attentively considers the different departments of power must perceive that the judiciary is beyond comparison the weakest of the three. The complete independence of the courts of justice is essential in a limited Constitution.',
+      tags: ['judicial review', 'judiciary', 'independence', 'Constitution']
+    },
+    {
+      id: 'gov-7',
+      title: 'Brutus No. 1 (1787)',
+      period: '9 Foundational Documents',
+      author: 'Anti-Federalist (pseudonymous)',
+      date: 'October 18, 1787',
+      context: 'Anti-Federalist essay warning against large republic and strong central government.',
+      excerpt: 'In a republic, the manners, sentiments, and interests of the people should be similar. If this be not the case, there will be a constant clashing of opinions; and the representatives of one part will be continually striving against those of the other. In so extensive a republic, the great officers of government would soon become above the control of the people.',
+      tags: ['Anti-Federalist', 'large republic', 'liberty', 'tyranny']
+    },
+    {
+      id: 'gov-8',
+      title: 'Letter from Birmingham Jail (1963)',
+      period: '9 Foundational Documents',
+      author: 'Martin Luther King Jr.',
+      date: 'April 16, 1963',
+      context: 'Defense of nonviolent civil disobedience and critique of moderate approach to civil rights.',
+      excerpt: 'Injustice anywhere is a threat to justice everywhere. We are caught in an inescapable network of mutuality, tied in a single garment of destiny. One has a moral responsibility to disobey unjust laws. An unjust law is a code that is out of harmony with the moral law.',
+      tags: ['civil rights', 'civil disobedience', 'justice', 'nonviolence']
+    },
+    
+    // 15 REQUIRED SCOTUS CASES
+    {
+      id: 'gov-scotus-1',
+      title: 'Marbury v. Madison (1803)',
+      period: '15 Required SCOTUS Cases',
+      author: 'Chief Justice John Marshall',
+      date: '1803',
+      context: 'Established judicial review, the power of courts to declare laws unconstitutional.',
+      excerpt: 'It is emphatically the province and duty of the judicial department to say what the law is. If two laws conflict with each other, the courts must decide on the operation of each. A law repugnant to the Constitution is void.',
+      tags: ['judicial review', 'Constitution', 'Supreme Court', 'separation of powers']
+    },
+    {
+      id: 'gov-scotus-2',
+      title: 'McCulloch v. Maryland (1819)',
+      period: '15 Required SCOTUS Cases',
+      author: 'Chief Justice John Marshall',
+      date: '1819',
+      context: 'Upheld implied powers and federal supremacy over states.',
+      excerpt: 'Let the end be legitimate, let it be within the scope of the Constitution, and all means which are appropriate, which are plainly adapted to that end, which are not prohibited, but consist with the letter and spirit of the Constitution, are constitutional. The power to tax involves the power to destroy.',
+      tags: ['implied powers', 'Necessary and Proper Clause', 'federalism', 'supremacy']
+    },
+    {
+      id: 'gov-scotus-3',
+      title: 'Schenck v. United States (1919)',
+      period: '15 Required SCOTUS Cases',
+      author: 'Justice Oliver Wendell Holmes',
+      date: '1919',
+      context: 'Established "clear and present danger" test for limits on free speech.',
+      excerpt: 'The most stringent protection of free speech would not protect a man falsely shouting fire in a theatre and causing a panic. The question in every case is whether the words used are used in such circumstances and are of such a nature as to create a clear and present danger.',
+      tags: ['First Amendment', 'free speech', 'clear and present danger', 'wartime']
+    },
+    {
+      id: 'gov-scotus-4',
+      title: 'Brown v. Board of Education (1954)',
+      period: '15 Required SCOTUS Cases',
+      author: 'Chief Justice Earl Warren',
+      date: 'May 17, 1954',
+      context: 'Declared school segregation unconstitutional, overturning Plessy.',
+      excerpt: 'We conclude that in the field of public education the doctrine of "separate but equal" has no place. Separate educational facilities are inherently unequal. We hold that the plaintiffs are deprived of the equal protection of the laws guaranteed by the Fourteenth Amendment.',
+      tags: ['civil rights', 'desegregation', 'equal protection', 'Fourteenth Amendment']
+    },
+    {
+      id: 'gov-scotus-5',
+      title: 'Engel v. Vitale (1962)',
+      period: '15 Required SCOTUS Cases',
+      author: 'Justice Hugo Black',
+      date: '1962',
+      context: 'Ruled school-sponsored prayer violates Establishment Clause.',
+      excerpt: 'It is no part of the business of government to compose official prayers for any group of the American people to recite as a part of a religious program carried on by government. The Establishment Clause stands as an expression of principle that religion is too sacred to be touched by the hand of government.',
+      tags: ['Establishment Clause', 'school prayer', 'First Amendment', 'religion']
+    },
+    {
+      id: 'gov-scotus-6',
+      title: 'Gideon v. Wainwright (1963)',
+      period: '15 Required SCOTUS Cases',
+      author: 'Justice Hugo Black',
+      date: '1963',
+      context: 'Established right to counsel for criminal defendants who cannot afford a lawyer.',
+      excerpt: 'In our adversary system of criminal justice, any person haled into court who is too poor to hire a lawyer cannot be assured a fair trial unless counsel is provided for him. The Sixth Amendment\'s guarantee of counsel is a fundamental right essential to a fair trial.',
+      tags: ['Sixth Amendment', 'right to counsel', 'due process', 'criminal procedure']
+    },
+    {
+      id: 'gov-scotus-7',
+      title: 'Tinker v. Des Moines (1969)',
+      period: '15 Required SCOTUS Cases',
+      author: 'Justice Abe Fortas',
+      date: '1969',
+      context: 'Protected students\' free speech rights in schools.',
+      excerpt: 'It can hardly be argued that either students or teachers shed their constitutional rights to freedom of speech or expression at the schoolhouse gate. Students in school are persons under our Constitution. In the absence of a substantial disruption of school operations, their rights must be protected.',
+      tags: ['student rights', 'free speech', 'First Amendment', 'symbolic speech']
+    },
+    {
+      id: 'gov-scotus-8',
+      title: 'New York Times Co. v. United States (1971)',
+      period: '15 Required SCOTUS Cases',
+      author: 'Per curiam opinion',
+      date: '1971',
+      context: 'Pentagon Papers case protecting press freedom from prior restraint.',
+      excerpt: 'Any system of prior restraints of expression comes to this Court bearing a heavy presumption against its constitutional validity. The Government carries a heavy burden of showing justification for the imposition of such a restraint.',
+      tags: ['freedom of press', 'prior restraint', 'First Amendment', 'Pentagon Papers']
+    },
+    {
+      id: 'gov-scotus-9',
+      title: 'Wisconsin v. Yoder (1972)',
+      period: '15 Required SCOTUS Cases',
+      author: 'Chief Justice Warren Burger',
+      date: '1972',
+      context: 'Protected Amish parents\' right to withdraw children from school for religious reasons.',
+      excerpt: 'The history and culture of Western civilization reflect a strong tradition of parental concern for the nurture and upbringing of their children. A way of life that is odd or even erratic but interferes with no rights or interests of others is not to be condemned because it is different.',
+      tags: ['Free Exercise Clause', 'parental rights', 'religious freedom', 'First Amendment']
+    },
+    {
+      id: 'gov-scotus-10',
+      title: 'Shaw v. Reno (1993)',
+      period: '15 Required SCOTUS Cases',
+      author: 'Justice Sandra Day O\'Connor',
+      date: '1993',
+      context: 'Ruled racial gerrymandering must meet strict scrutiny.',
+      excerpt: 'A reapportionment plan that includes in one district individuals who belong to the same race, but who are otherwise widely separated by geographical and political boundaries, and who may have little in common with one another but the color of their skin, bears an uncomfortable resemblance to political apartheid.',
+      tags: ['redistricting', 'equal protection', 'racial gerrymandering', 'Voting Rights Act']
+    },
+    {
+      id: 'gov-scotus-11',
+      title: 'United States v. Lopez (1995)',
+      period: '15 Required SCOTUS Cases',
+      author: 'Chief Justice William Rehnquist',
+      date: '1995',
+      context: 'Limited Congress\'s Commerce Clause power for first time in decades.',
+      excerpt: 'To uphold the Government\'s contentions here, we would have to pile inference upon inference in a manner that would bid fair to convert congressional authority under the Commerce Clause to a general police power of the sort retained by the States.',
+      tags: ['Commerce Clause', 'federalism', 'gun control', 'enumerated powers']
+    },
+    {
+      id: 'gov-scotus-12',
+      title: 'McDonald v. Chicago (2010)',
+      period: '15 Required SCOTUS Cases',
+      author: 'Justice Samuel Alito',
+      date: '2010',
+      context: 'Incorporated Second Amendment right to bear arms against states.',
+      excerpt: 'The Fourteenth Amendment makes the Second Amendment right to keep and bear arms fully applicable to the States. Self-defense is a basic right, recognized by many legal systems from ancient times to the present day, and the Heller Court held that individual self-defense is the central component of the Second Amendment right.',
+      tags: ['Second Amendment', 'incorporation', 'gun rights', 'Fourteenth Amendment']
+    },
+    {
+      id: 'gov-scotus-13',
+      title: 'Citizens United v. FEC (2010)',
+      period: '15 Required SCOTUS Cases',
+      author: 'Justice Anthony Kennedy',
+      date: '2010',
+      context: 'Struck down limits on corporate and union political spending.',
+      excerpt: 'If the First Amendment has any force, it prohibits Congress from fining or jailing citizens, or associations of citizens, for simply engaging in political speech. The Government may not suppress political speech on the basis of the speaker\'s corporate identity.',
+      tags: ['campaign finance', 'free speech', 'corporations', 'First Amendment']
+    },
+    {
+      id: 'gov-scotus-14',
+      title: 'Baker v. Carr (1962)',
+      period: '15 Required SCOTUS Cases',
+      author: 'Justice William J. Brennan Jr.',
+      date: '1962',
+      context: 'Established federal courts can hear redistricting cases.',
+      excerpt: 'The mere fact that the suit seeks protection of a political right does not mean it presents a political question. The Equal Protection Clause reaches the right to vote and the right to have one\'s vote counted on an equal basis with other votes.',
+      tags: ['redistricting', 'justiciability', 'equal protection', 'one person one vote']
+    }
+  ],
+  
+  'ap-lit': [
+    {
+      id: 'lit-1',
+      title: 'Sonnet 18: "Shall I compare thee to a summer\'s day?" (1609)',
+      period: 'Poetry Analysis',
+      author: 'William Shakespeare',
+      date: '1609',
+      context: 'One of Shakespeare\'s most famous sonnets exploring beauty, time, and immortality through poetry.',
+      excerpt: 'Shall I compare thee to a summer\'s day?\nThou art more lovely and more temperate:\nRough winds do shake the darling buds of May,\nAnd summer\'s lease hath all too short a date:\nSometime too hot the eye of heaven shines,\nAnd often is his gold complexion dimm\'d;\nAnd every fair from fair sometime declines,\nBy chance or nature\'s changing course untrimm\'d;\nBut thy eternal summer shall not fade\nNor lose possession of that fair thou owest;\nNor shall Death brag thou wander\'st in his shade,\nWhen in eternal lines to time thou growest:\nSo long as men can breathe or eyes can see,\nSo long lives this and this gives life to thee.',
+      tags: ['sonnet', 'imagery', 'metaphor', 'immortality', 'beauty']
+    },
+    {
+      id: 'lit-2',
+      title: 'The Yellow Wallpaper (excerpt, 1892)',
+      period: 'Prose Fiction',
+      author: 'Charlotte Perkins Gilman',
+      date: '1892',
+      context: 'Short story about a woman\'s descent into madness, critique of medical treatment of women.',
+      excerpt: 'It is very seldom that mere ordinary people like John and myself secure ancestral halls for the summer. A colonial mansion, a hereditary estate, I would say a haunted house, and reach the height of romantic felicity—but that would be asking too much of fate! Still I will proudly declare that there is something queer about it. Else, why should it be let so cheaply? And why have stood so long untenanted? John laughs at me, of course, but one expects that in marriage.',
+      tags: ['feminist literature', 'narrator', 'symbolism', 'madness', 'Gothic']
+    },
+    {
+      id: 'lit-3',
+      title: 'The Love Song of J. Alfred Prufrock (excerpt, 1915)',
+      period: 'Poetry Analysis',
+      author: 'T.S. Eliot',
+      date: '1915',
+      context: 'Modernist poem exploring alienation, aging, and indecision.',
+      excerpt: 'Let us go then, you and I,\nWhen the evening is spread out against the sky\nLike a patient etherized upon a table;\nLet us go, through certain half-deserted streets,\nThe muttering retreats\nOf restless nights in one-night cheap hotels\nAnd sawdust restaurants with oyster-shells:\nStreets that follow like a tedious argument\nOf insidious intent\nTo lead you to an overwhelming question...\nOh, do not ask, "What is it?"\nLet us go and make our visit.',
+      tags: ['modernism', 'stream of consciousness', 'imagery', 'alienation']
+    },
+    {
+      id: 'lit-4',
+      title: 'Their Eyes Were Watching God (excerpt, 1937)',
+      period: 'Prose Fiction',
+      author: 'Zora Neale Hurston',
+      date: '1937',
+      context: 'Novel about an African American woman\'s search for identity and love.',
+      excerpt: 'Ships at a distance have every man\'s wish on board. For some they come in with the tide. For others they sail forever on the horizon, never out of sight, never landing until the Watcher turns his eyes away in resignation, his dreams mocked to death by Time. That is the life of men. Now, women forget all those things they don\'t want to remember, and remember everything they don\'t want to forget. The dream is the truth. Then they act and do things accordingly.',
+      tags: ['Harlem Renaissance', 'feminist', 'African American literature', 'dialect']
+    }
+  ],
+  
+  'world': [
+    // ANCIENT CIVILIZATIONS
+    {
+      id: 'world-std-1',
+      title: 'The Code of Hammurabi (c. 1754 BCE)',
+      period: 'Ancient Civilizations',
+      author: 'King Hammurabi of Babylon',
+      date: 'c. 1754 BCE',
+      context: 'One of the earliest written legal codes, establishing justice in Mesopotamia.',
+      excerpt: 'If a man has destroyed the eye of a man of the class of gentlemen, they shall destroy his eye. If he has broken a gentleman\'s bone, they shall break his bone. If he has destroyed the eye of a commoner or broken the bone of a commoner, he shall pay one mina of silver. When Anu and Enlil gave me the land of Sumer and Akkad to rule, they entrusted a scepter to me, I established law and justice in the language of the land.',
+      tags: ['Mesopotamia', 'law', 'justice', 'ancient world', 'social hierarchy']
+    },
+    {
+      id: 'world-std-2',
+      title: 'The Epic of Gilgamesh (c. 2100 BCE)',
+      period: 'Ancient Civilizations',
+      author: 'Anonymous Sumerian/Babylonian',
+      date: 'c. 2100 BCE',
+      context: 'Ancient Mesopotamian epic exploring themes of mortality, friendship, and the search for meaning.',
+      excerpt: 'The gods created Gilgamesh, two-thirds divine and one-third mortal. When Enkidu died, Gilgamesh wept bitterly. "Shall I not die also? Am I not like Enkidu? Sorrow has entered my heart. I am afraid of death." So Gilgamesh went on a quest to find immortality.',
+      tags: ['mythology', 'Mesopotamia', 'epic literature', 'mortality']
+    },
+    {
+      id: 'world-std-3',
+      title: 'The Analects of Confucius (c. 479 BCE)',
+      period: 'Classical Civilizations',
+      author: 'Confucius (compiled by disciples)',
+      date: 'c. 479 BCE',
+      context: 'Foundational text of Confucianism emphasizing moral virtue and social harmony.',
+      excerpt: 'The Master said: "Is it not pleasant to learn with a constant perseverance? Is it not delightful to have friends coming from distant quarters? The superior man thinks of virtue; the small man thinks of comfort. Benevolence, righteousness, propriety, wisdom - these are not infused into us from without. We are certainly furnished with them."',
+      tags: ['Confucianism', 'China', 'philosophy', 'ethics', 'classical']
+    },
+    {
+      id: 'world-std-4',
+      title: 'Pericles\' Funeral Oration (431 BCE)',
+      period: 'Classical Civilizations',
+      author: 'Pericles (recorded by Thucydides)',
+      date: '431 BCE',
+      context: 'Athenian leader\'s speech praising democracy and civic duty during the Peloponnesian War.',
+      excerpt: 'Our constitution is called a democracy because power is in the hands not of a minority but of the whole people. Our city is open to the world. We are lovers of the beautiful, yet simple in our tastes, and we cultivate the mind without loss of manliness. Wealth we employ as an opportunity for action, and poverty is nothing to be ashamed of.',
+      tags: ['Athens', 'democracy', 'Greece', 'classical', 'civic virtue']
+    },
+    
+    // MEDIEVAL WORLD
+    {
+      id: 'world-std-5',
+      title: 'The Quran on Social Justice (7th century CE)',
+      period: 'Medieval World',
+      author: 'Islamic scripture',
+      date: '7th century CE',
+      context: 'Quranic passages emphasizing charity, justice, and care for the poor.',
+      excerpt: 'O you who believe! Be steadfast witnesses for Allah in equity, and let not hatred of any people seduce you that you deal not justly. Deal justly, that is nearer to piety. It is not righteousness that you turn your faces to the East and the West; but righteous is he who believes in Allah and gives his wealth for love of Him to kinsfolk and to orphans and the needy.',
+      tags: ['Islam', 'Quran', 'social justice', 'medieval', 'religion']
+    },
+    {
+      id: 'world-std-6',
+      title: 'Magna Carta (1215)',
+      period: 'Medieval World',
+      author: 'English barons and King John',
+      date: 'June 15, 1215',
+      context: 'Charter limiting royal power and establishing rule of law in medieval England.',
+      excerpt: 'No free man shall be seized or imprisoned, or stripped of his rights or possessions, or outlawed or exiled, except by the lawful judgment of his equals or by the law of the land. To no one will we sell, to no one deny or delay right or justice.',
+      tags: ['England', 'rule of law', 'medieval', 'rights', 'limited government']
+    },
+    {
+      id: 'world-std-7',
+      title: 'Ibn Khaldun: The Muqaddimah (1377)',
+      period: 'Medieval World',
+      author: 'Ibn Khaldun',
+      date: '1377',
+      context: 'Islamic scholar\'s pioneering work in historiography and sociology.',
+      excerpt: 'Know that the world of civilization has its particular conditions and customs, and that differences exist among nations in customs, character, and ways of life. When souls are similar, their habits and customs become similar, and vice versa. Dynasties have a natural life span like individuals.',
+      tags: ['historiography', 'Islamic scholarship', 'sociology', 'medieval']
+    },
+    
+    // AGE OF EXPLORATION & COLONIZATION
+    {
+      id: 'world-std-8',
+      title: 'Broken Spears: The Aztec Account (16th century)',
+      period: 'Age of Exploration',
+      author: 'Nahua accounts',
+      date: 'c. 1520s',
+      context: 'Indigenous Mexican perspectives on Spanish conquest.',
+      excerpt: 'Broken spears lie in the roads; we have torn our hair in our grief. The houses are roofless now, and their walls are red with blood. We have pounded our hands in despair against the adobe walls. Our inheritance, our city, is lost and dead.',
+      tags: ['conquest', 'indigenous perspective', 'colonization', 'Americas']
+    },
+    {
+      id: 'world-std-9',
+      title: 'The Interesting Narrative of Olaudah Equiano (1789)',
+      period: 'Age of Exploration',
+      author: 'Olaudah Equiano',
+      date: '1789',
+      context: 'Enslaved African\'s autobiography of the Middle Passage.',
+      excerpt: 'The stench of the hold while we were on the coast was so intolerably loathsome that it was dangerous to remain there for any time. The closeness of the place and the heat of the climate added to the number in the ship, which was so crowded that each had scarcely room to turn himself, almost suffocated us.',
+      tags: ['slave trade', 'Middle Passage', 'abolition', 'memoir']
+    },
+    
+    // ENLIGHTENMENT & REVOLUTIONS
+    {
+      id: 'world-std-10',
+      title: 'John Locke: Two Treatises of Government (1689)',
+      period: 'Enlightenment & Revolutions',
+      author: 'John Locke',
+      date: '1689',
+      context: 'Enlightenment philosophy establishing natural rights and social contract theory.',
+      excerpt: 'Men being by nature all free, equal, and independent, no one can be subjected to the political power of another without his own consent. To protect natural rights of life, liberty, and property, men enter into society and establish government. When government violates these rights, the people have the right to alter or abolish it.',
+      tags: ['Enlightenment', 'natural rights', 'social contract', 'revolution']
+    },
+    {
+      id: 'world-std-11',
+      title: 'Olympe de Gouges: Declaration of the Rights of Woman (1791)',
+      period: 'Enlightenment & Revolutions',
+      author: 'Olympe de Gouges',
+      date: 'September 1791',
+      context: 'French feminist writer\'s response to the Declaration of the Rights of Man.',
+      excerpt: 'Woman is born free and lives equal to man in her rights. Woman has the right to mount the scaffold; she must equally have the right to mount the rostrum. If woman has the right to be executed, she must also have the right to debate.',
+      tags: ['feminism', 'French Revolution', 'women\'s rights', 'Enlightenment']
+    },
+    
+    // IMPERIALISM & NATIONALISM
+    {
+      id: 'world-std-12',
+      title: 'Rudyard Kipling: "The White Man\'s Burden" (1899)',
+      period: 'Imperialism & Nationalism',
+      author: 'Rudyard Kipling',
+      date: '1899',
+      context: 'Poem expressing imperialist ideology and justification for colonization.',
+      excerpt: 'Take up the White Man\'s burden—Send forth the best ye breed—Go bind your sons to exile To serve your captives\' need; To wait in heavy harness, On fluttered folk and wild—Your new-caught, sullen peoples, Half-devil and half-child.',
+      tags: ['imperialism', 'colonization', 'racism', 'ideology']
+    },
+    {
+      id: 'world-std-13',
+      title: 'Indian National Congress: Declaration of Independence (1930)',
+      period: 'Imperialism & Nationalism',
+      author: 'Indian National Congress',
+      date: 'January 26, 1930',
+      context: 'Indian independence movement\'s declaration of sovereignty.',
+      excerpt: 'We believe that it is the inalienable right of the Indian people to have freedom and to enjoy the fruits of their toil. We believe that if any government deprives a people of these rights, the people have a further right to alter it or abolish it. The British government in India has not only deprived the Indian people of their freedom but has based itself on the exploitation of the masses.',
+      tags: ['Indian independence', 'nationalism', 'anti-imperialism', 'decolonization']
+    },
+    
+    // WORLD WARS & TOTALITARIANISM
+    {
+      id: 'world-std-14',
+      title: 'Elie Wiesel: Night (excerpt, 1956)',
+      period: 'World Wars',
+      author: 'Elie Wiesel',
+      date: '1956',
+      context: 'Holocaust survivor\'s memoir of Auschwitz concentration camp.',
+      excerpt: 'Never shall I forget that night, the first night in camp, that turned my life into one long night seven times sealed. Never shall I forget that smoke. Never shall I forget the small faces of the children whose bodies I saw transformed into smoke under a silent sky.',
+      tags: ['Holocaust', 'WWII', 'genocide', 'memoir', 'human rights']
+    },
+    {
+      id: 'world-std-15',
+      title: 'Winston Churchill: "Iron Curtain" Speech (1946)',
+      period: 'World Wars',
+      author: 'Winston Churchill',
+      date: 'March 5, 1946',
+      context: 'Speech marking the beginning of the Cold War era.',
+      excerpt: 'From Stettin in the Baltic to Trieste in the Adriatic, an iron curtain has descended across the Continent. Behind that line lie all the capitals of the ancient states of Central and Eastern Europe. All are subject to Soviet influence and control.',
+      tags: ['Cold War', 'communism', 'Soviet Union', 'post-WWII']
+    },
+    
+    // MODERN WORLD
+    {
+      id: 'world-std-16',
+      title: 'Nelson Mandela: "I Am Prepared to Die" (1964)',
+      period: 'Modern World',
+      author: 'Nelson Mandela',
+      date: 'April 20, 1964',
+      context: 'Statement from the dock during Rivonia Trial against apartheid.',
+      excerpt: 'I have fought against white domination, and I have fought against black domination. I have cherished the ideal of a democratic and free society in which all persons live together in harmony and with equal opportunities. It is an ideal which I hope to live for and to achieve. But if needs be, it is an ideal for which I am prepared to die.',
+      tags: ['apartheid', 'civil rights', 'South Africa', 'human rights', 'resistance']
+    },
+    {
+      id: 'world-std-17',
+      title: 'Malala Yousafzai: UN Speech (2013)',
+      period: 'Modern World',
+      author: 'Malala Yousafzai',
+      date: 'July 12, 2013',
+      context: 'Pakistani activist\'s speech on education rights after being shot by Taliban.',
+      excerpt: 'Let us pick up our books and our pens. They are our most powerful weapons. One child, one teacher, one book, and one pen can change the world. Education is the only solution. Education first.',
+      tags: ['education', 'women\'s rights', 'activism', 'human rights', 'contemporary']
+    }
+  ],
+  
+  'us': [
+    // COLONIAL PERIOD
+    {
+      id: 'us-std-1',
+      title: 'The Mayflower Compact (1620)',
+      period: 'Colonial America',
+      author: 'Pilgrims aboard the Mayflower',
+      date: 'November 11, 1620',
+      context: 'Agreement establishing self-governance in Plymouth Colony.',
+      excerpt: 'We whose names are underwritten do covenant and combine ourselves together into a civil body politic, for our better ordering and preservation, and by virtue hereof to enact such just and equal laws as shall be thought most meet and convenient for the general good of the Colony.',
+      tags: ['colonial', 'self-government', 'Puritans', 'social contract']
+    },
+    {
+      id: 'us-std-2',
+      title: 'The Fundamental Orders of Connecticut (1639)',
+      period: 'Colonial America',
+      author: 'Connecticut settlers',
+      date: '1639',
+      context: 'First written constitution in North America.',
+      excerpt: 'We do associate and conjoin ourselves to be as one public state or commonwealth. We do for ourselves and our successors enter into combination and confederation together, to maintain and preserve the liberty and purity of the Gospel.',
+      tags: ['colonial', 'constitution', 'self-government', 'Connecticut']
+    },
+    {
+      id: 'us-std-3',
+      title: 'Benjamin Franklin: "Join, or Die" (1754)',
+      period: 'Colonial America',
+      author: 'Benjamin Franklin',
+      date: '1754',
+      context: 'Political cartoon urging colonial unity during French and Indian War.',
+      excerpt: 'The cartoon depicted a snake cut into segments labeled with initials of the colonies. The message: divided we are vulnerable; united we can defend ourselves. This became an enduring symbol of American unity.',
+      tags: ['colonial unity', 'French and Indian War', 'political cartoon', 'symbolism']
+    },
+    
+    // REVOLUTIONARY PERIOD (similar to AP US but simplified)
+    {
+      id: 'us-std-4',
+      title: 'Patrick Henry: "Give Me Liberty" Speech (1775)',
+      period: 'Revolutionary Era',
+      author: 'Patrick Henry',
+      date: 'March 23, 1775',
+      context: 'Fiery speech urging Virginia to join the Revolution.',
+      excerpt: 'Is life so dear, or peace so sweet, as to be purchased at the price of chains and slavery? Forbid it, Almighty God! I know not what course others may take; but as for me, give me liberty or give me death!',
+      tags: ['Revolution', 'independence', 'rhetoric', 'Virginia']
+    },
+    {
+      id: 'us-std-5',
+      title: 'The Articles of Confederation (1777)',
+      period: 'Revolutionary Era',
+      author: 'Continental Congress',
+      date: 'November 15, 1777',
+      context: 'First constitution of the United States, establishing a weak central government.',
+      excerpt: 'Each state retains its sovereignty, freedom, and independence. The United States in Congress assembled shall have authority to declare war, make peace, enter into treaties, coin money, regulate Indian affairs, and establish post offices.',
+      tags: ['Articles of Confederation', 'weak government', 'states\' rights']
+    },
+    
+    // EARLY REPUBLIC
+    {
+      id: 'us-std-6',
+      title: 'George Washington: Farewell Address (1796)',
+      period: 'Early Republic',
+      author: 'George Washington',
+      date: 'September 19, 1796',
+      context: 'President Washington\'s advice to the nation upon leaving office.',
+      excerpt: 'The great rule of conduct for us in regard to foreign nations is to have with them as little political connection as possible. Avoid permanent alliances with any portion of the foreign world. Beware of the baneful effects of the spirit of party.',
+      tags: ['neutrality', 'political parties', 'foreign policy', 'Washington']
+    },
+    {
+      id: 'us-std-7',
+      title: 'Marbury v. Madison (1803)',
+      period: 'Early Republic',
+      author: 'Chief Justice John Marshall',
+      date: '1803',
+      context: 'Supreme Court case establishing judicial review.',
+      excerpt: 'It is emphatically the province and duty of the judicial department to say what the law is. A law repugnant to the Constitution is void. The Constitution is superior to any ordinary act of the legislature.',
+      tags: ['judicial review', 'Supreme Court', 'Constitution', 'Marshall']
+    },
+    
+    // WESTWARD EXPANSION
+    {
+      id: 'us-std-8',
+      title: 'Andrew Jackson: On Indian Removal (1830)',
+      period: 'Westward Expansion',
+      author: 'Andrew Jackson',
+      date: '1830',
+      context: 'President Jackson\'s message to Congress supporting Indian removal.',
+      excerpt: 'It will separate the Indians from immediate contact with settlements of whites and will place them under the protection of the Government. Doubtless it will be painful to leave the graves of their fathers; but what do they more than our ancestors did?',
+      tags: ['Indian Removal', 'Trail of Tears', 'Native Americans', 'Jackson']
+    },
+    {
+      id: 'us-std-9',
+      title: 'Sojourner Truth: "Ain\'t I a Woman?" (1851)',
+      period: 'Reform Movements',
+      author: 'Sojourner Truth',
+      date: 'May 1851',
+      context: 'Speech at women\'s rights convention connecting abolition and feminism.',
+      excerpt: 'That man over there says that women need to be helped into carriages and lifted over ditches. Nobody ever helps me into carriages, or over mud-puddles, or gives me any best place! And ain\'t I a woman? I have ploughed and planted, and gathered into barns, and no man could head me! And ain\'t I a woman?',
+      tags: ['women\'s rights', 'abolition', 'intersectionality', 'feminism']
+    },
+    
+    // CIVIL WAR & RECONSTRUCTION
+    {
+      id: 'us-std-10',
+      title: 'Dred Scott v. Sandford (1857)',
+      period: 'Civil War Era',
+      author: 'Chief Justice Roger Taney',
+      date: '1857',
+      context: 'Infamous Supreme Court decision denying citizenship to African Americans.',
+      excerpt: 'The negro has no rights which the white man is bound to respect. They had for more than a century been regarded as beings of an inferior order, unfit to associate with the white race. They were never thought of as citizens.',
+      tags: ['slavery', 'Supreme Court', 'citizenship', 'civil rights']
+    },
+    {
+      id: 'us-std-11',
+      title: 'The Homestead Act (1862)',
+      period: 'Westward Expansion',
+      author: 'U.S. Congress',
+      date: 'May 20, 1862',
+      context: 'Law granting 160 acres of public land to settlers.',
+      excerpt: 'Any person who is the head of a family, or who has arrived at the age of twenty-one years and is a citizen of the United States shall be entitled to enter one quarter section of unappropriated public lands, upon which said person may have filed a preemption claim.',
+      tags: ['westward expansion', 'land policy', 'settlement', 'agriculture']
+    },
+    
+    // INDUSTRIALIZATION & IMMIGRATION
+    {
+      id: 'us-std-12',
+      title: 'Emma Lazarus: "The New Colossus" (1883)',
+      period: 'Gilded Age',
+      author: 'Emma Lazarus',
+      date: '1883',
+      context: 'Poem on the Statue of Liberty welcoming immigrants.',
+      excerpt: 'Give me your tired, your poor, Your huddled masses yearning to breathe free, The wretched refuse of your teeming shore. Send these, the homeless, tempest-tost to me, I lift my lamp beside the golden door!',
+      tags: ['immigration', 'Statue of Liberty', 'American dream', 'poetry']
+    },
+    {
+      id: 'us-std-13',
+      title: 'Upton Sinclair: The Jungle (excerpt, 1906)',
+      period: 'Progressive Era',
+      author: 'Upton Sinclair',
+      date: '1906',
+      context: 'Muckraking novel exposing meatpacking industry conditions.',
+      excerpt: 'There would be meat that had tumbled out on the floor, in the dirt and sawdust, where the workers had tramped and spit. There would be meat stored in great piles in rooms, and the water from leaky roofs would drip over it, and thousands of rats would race about on it.',
+      tags: ['Progressive Era', 'muckraking', 'labor', 'food safety']
+    },
+    
+    // WORLD WARS & GREAT DEPRESSION
+    {
+      id: 'us-std-14',
+      title: 'Woodrow Wilson: War Message (1917)',
+      period: 'World War I',
+      author: 'Woodrow Wilson',
+      date: 'April 2, 1917',
+      context: 'President Wilson asking Congress to declare war on Germany.',
+      excerpt: 'The world must be made safe for democracy. We shall fight for the things which we have always carried nearest our hearts—for democracy, for the right of those who submit to authority to have a voice in their own governments, for the rights and liberties of small nations.',
+      tags: ['WWI', 'democracy', 'interventionism', 'Wilson']
+    },
+    {
+      id: 'us-std-15',
+      title: 'FDR: First Fireside Chat (1933)',
+      period: 'Great Depression',
+      author: 'Franklin D. Roosevelt',
+      date: 'March 12, 1933',
+      context: 'Radio address explaining bank crisis during Great Depression.',
+      excerpt: 'I want to talk for a few minutes with the people of the United States about banking. I want to tell you what has been done in the last few days, why it was done, and what the next steps are going to be. Confidence and courage are the essentials in our plan.',
+      tags: ['Great Depression', 'New Deal', 'FDR', 'media']
+    },
+    
+    // CIVIL RIGHTS & MODERN ERA
+    {
+      id: 'us-std-16',
+      title: 'Rosa Parks: My Story (excerpt, 1992)',
+      period: 'Civil Rights Movement',
+      author: 'Rosa Parks',
+      date: '1992 (about 1955 events)',
+      context: 'Memoir of the Montgomery Bus Boycott.',
+      excerpt: 'People always say that I didn\'t give up my seat because I was tired, but that isn\'t true. I was not tired physically. No, the only tired I was, was tired of giving in. I had been pushed around all my life and felt at this moment that I couldn\'t take it anymore.',
+      tags: ['civil rights', 'Montgomery Bus Boycott', 'Rosa Parks', 'resistance']
+    },
+    {
+      id: 'us-std-17',
+      title: 'Cesar Chavez: Letter from Delano (1969)',
+      period: 'Civil Rights Movement',
+      author: 'Cesar Chavez',
+      date: 'April 1969',
+      context: 'United Farm Workers leader on nonviolent resistance.',
+      excerpt: 'We advocate militant nonviolence as our means of achieving justice for our people, but we are not blind to the feelings of frustration, impatience and anger which seeth inside every farm worker. The time has come for the liberation of the poor farm worker.',
+      tags: ['labor movement', 'farm workers', 'nonviolence', 'Chicano rights']
+    }
+  ],
+  
+  'gov-econ': [
+    {
+      id: 'gov-econ-1',
+      title: 'The Bill of Rights (1791)',
+      period: 'Founding Documents',
+      author: 'James Madison (primary author)',
+      date: 'December 15, 1791',
+      context: 'First ten amendments protecting individual liberties.',
+      excerpt: 'Amendment I: Congress shall make no law respecting an establishment of religion, or prohibiting the free exercise thereof; or abridging the freedom of speech, or of the press; or the right of the people peaceably to assemble. Amendment II: A well regulated Militia being necessary, the right of the people to keep and bear Arms shall not be infringed.',
+      tags: ['Bill of Rights', 'civil liberties', 'Constitution', 'amendments']
+    },
+    {
+      id: 'gov-econ-2',
+      title: 'John Locke: Second Treatise on Government (1689)',
+      period: 'Political Philosophy',
+      author: 'John Locke',
+      date: '1689',
+      context: 'Foundational text on natural rights and limited government.',
+      excerpt: 'Men being by nature all free, equal and independent, no one can be put out of this estate and subjected to the political power of another without his own consent. The great and chief end of men uniting into commonwealths is the preservation of their property.',
+      tags: ['natural rights', 'social contract', 'property', 'Enlightenment']
+    },
+    {
+      id: 'gov-econ-3',
+      title: 'Adam Smith: The Wealth of Nations (1776)',
+      period: 'Economic Theory',
+      author: 'Adam Smith',
+      date: '1776',
+      context: 'Foundational text of capitalism and free market economics.',
+      excerpt: 'It is not from the benevolence of the butcher, the brewer, or the baker that we expect our dinner, but from their regard to their own interest. By pursuing his own interest he frequently promotes that of the society more effectually than when he really intends to promote it.',
+      tags: ['capitalism', 'free market', 'invisible hand', 'economics']
+    },
+    {
+      id: 'gov-econ-4',
+      title: 'Brown v. Board of Education (1954)',
+      period: 'Civil Rights & Liberties',
+      author: 'Chief Justice Earl Warren',
+      date: 'May 17, 1954',
+      context: 'Landmark case ending school segregation.',
+      excerpt: 'We conclude that in the field of public education the doctrine of "separate but equal" has no place. Separate educational facilities are inherently unequal.',
+      tags: ['civil rights', 'desegregation', 'equal protection', 'Supreme Court']
+    }
+  ],
+  
+  'ethnic-studies': [
+    {
+      id: 'ethnic-1',
+      title: 'Chief Seattle\'s Speech (1854)',
+      period: 'Native American Experience',
+      author: 'Chief Seattle (Suquamish)',
+      date: 'March 1854',
+      context: 'Speech on the relationship between indigenous peoples and the land.',
+      excerpt: 'How can you buy or sell the sky, the warmth of the land? Every part of this earth is sacred to my people. Every shining pine needle, every sandy shore, every mist in the dark woods, every clearing and humming insect is holy. The earth does not belong to man; man belongs to the earth.',
+      tags: ['Native American', 'environment', 'indigenous worldview', 'land rights']
+    },
+    {
+      id: 'ethnic-2',
+      title: 'Frederick Douglass: "What to the Slave is the Fourth of July?" (1852)',
+      period: 'African American Experience',
+      author: 'Frederick Douglass',
+      date: 'July 5, 1852',
+      context: 'Powerful critique of American hypocrisy on slavery.',
+      excerpt: 'What, to the American slave, is your 4th of July? I answer: a day that reveals to him the gross injustice and cruelty to which he is the constant victim. To him, your celebration is a sham; your boasted liberty, an unholy license.',
+      tags: ['African American', 'slavery', 'abolition', 'rhetoric', 'justice']
+    },
+    {
+      id: 'ethnic-3',
+      title: 'Chinese Exclusion Act (1882)',
+      period: 'Asian American Experience',
+      author: 'U.S. Congress',
+      date: 'May 6, 1882',
+      context: 'First law restricting immigration based on nationality.',
+      excerpt: 'The coming of Chinese laborers to this country endangers the good order of certain localities. Be it enacted that from and after the expiration of ninety days, the coming of Chinese laborers to the United States be suspended.',
+      tags: ['Asian American', 'immigration', 'discrimination', 'exclusion']
+    },
+    {
+      id: 'ethnic-4',
+      title: 'Corridos: Mexican American Border Ballads (19th-20th century)',
+      period: 'Latino/a/x Experience',
+      author: 'Folk tradition',
+      date: '1800s-1900s',
+      context: 'Folk songs preserving Mexican American history and resistance.',
+      excerpt: 'The corridos tell our stories—of crossing the border, of working the fields, of fighting injustice. They preserve our memory, our struggles, our dignity. When we sing, we remember who we are and where we came from.',
+      tags: ['Mexican American', 'oral tradition', 'resistance', 'culture', 'music']
+    },
+    {
+      id: 'ethnic-5',
+      title: 'W.E.B. Du Bois: "The Souls of Black Folk" (1903)',
+      period: 'African American Experience',
+      author: 'W.E.B. Du Bois',
+      date: '1903',
+      context: 'Foundational text on double consciousness and the color line.',
+      excerpt: 'The problem of the twentieth century is the problem of the color-line. One ever feels his two-ness—an American, a Negro; two souls, two thoughts, two unreconciled strivings; two warring ideals in one dark body.',
+      tags: ['African American', 'double consciousness', 'identity', 'race']
+    },
+    {
+      id: 'ethnic-6',
+      title: 'Yuri Kochiyama: "Then Came the War" (1991)',
+      period: 'Asian American Experience',
+      author: 'Yuri Kochiyama',
+      date: '1991',
+      context: 'Japanese American activist on internment and civil rights.',
+      excerpt: 'On December 7, 1941, our lives changed forever. We were American citizens, but suddenly we were seen as the enemy. They took us from our homes and put us in camps. But that experience taught me about injustice, and I dedicated my life to fighting for all oppressed peoples.',
+      tags: ['Japanese American', 'internment', 'civil rights', 'activism']
+    },
+    {
+      id: 'ethnic-7',
+      title: 'Gloria Anzaldúa: Borderlands/La Frontera (1987)',
+      period: 'Latino/a/x Experience',
+      author: 'Gloria Anzaldúa',
+      date: '1987',
+      context: 'Chicana feminist theory on border identity and mestiza consciousness.',
+      excerpt: 'The U.S.-Mexican border es una herida abierta where the Third World grates against the first and bleeds. A borderland is a vague and undetermined place created by the emotional residue of an unnatural boundary. It is in a constant state of transition.',
+      tags: ['Chicana', 'borderlands', 'identity', 'feminism', 'mestiza consciousness']
+    },
+    {
+      id: 'ethnic-8',
+      title: 'Black Lives Matter: A Herstory (2014)',
+      period: 'Contemporary Movements',
+      author: 'Alicia Garza, Patrisse Cullors, Opal Tometi',
+      date: '2013-2014',
+      context: 'Founding statement of the Black Lives Matter movement.',
+      excerpt: 'Black Lives Matter is an ideological and political intervention in a world where Black lives are systematically and intentionally targeted for demise. It is an affirmation of Black folks\' contributions to this society, our humanity, and our resilience in the face of deadly oppression.',
+      tags: ['Black Lives Matter', 'contemporary', 'social justice', 'activism']
+    }
+  ]
+};
+
+// Source Library Functions
+function openSourceLibrary() {
+  document.getElementById('sourceLibrary').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  loadSourceCategories();
+}
+
+function closeSourceLibrary() {
+  document.getElementById('sourceLibrary').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleSourceLibraryClick(e) {
+  if (e.target === document.getElementById('sourceLibrary')) closeSourceLibrary();
+}
+
+function loadSourceCategories() {
+  const filter = document.getElementById('sourceFilter').value;
+  const sources = filter === 'all' ? Object.values(PRIMARY_SOURCES).flat() : PRIMARY_SOURCES[filter] || [];
+  
+  // Get unique periods
+  const periods = [...new Set(sources.map(s => s.period))];
+  
+  const categoriesHTML = periods.map(period => 
+    `<div style="padding:8px 12px;cursor:pointer;font-size:13px;color:var(--gray);transition:all 0.2s;border-left:2px solid transparent" 
+          onmouseover="this.style.borderLeft='2px solid var(--black)';this.style.color='var(--black)'" 
+          onmouseout="this.style.borderLeft='2px solid transparent';this.style.color='var(--gray)'"
+          onclick="filterByPeriod('${period}')">${period}</div>`
+  ).join('');
+  
+  document.getElementById('sourceCategories').innerHTML = categoriesHTML;
+  
+  // Show all sources by default
+  displaySources(sources);
+}
+
+function filterSources() {
+  loadSourceCategories();
+}
+
+function filterByPeriod(period) {
+  const filter = document.getElementById('sourceFilter').value;
+  const allSources = filter === 'all' ? Object.values(PRIMARY_SOURCES).flat() : PRIMARY_SOURCES[filter] || [];
+  const filtered = allSources.filter(s => s.period === period);
+  displaySources(filtered);
+}
+
+function displaySources(sources) {
+  if (sources.length === 0) {
+    document.getElementById('sourceList').innerHTML = '<p style="color:var(--gray)">No sources found for this filter.</p>';
+    return;
+  }
+  
+  const html = sources.map(source => `
+    <div style="border:1px solid var(--gray-light);padding:24px;margin-bottom:16px;background:var(--white)">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;color:var(--black);margin-bottom:8px">${source.title}</div>
+      <div style="font-size:12px;color:var(--gray);margin-bottom:4px"><strong>Author:</strong> ${source.author} | <strong>Date:</strong> ${source.date}</div>
+      <div style="font-size:12px;color:var(--gray);margin-bottom:12px"><strong>Period:</strong> ${source.period}</div>
+      <div style="font-size:13px;color:var(--gray);margin-bottom:12px;font-style:italic">${source.context}</div>
+      <div style="font-size:14px;line-height:1.7;color:var(--black);padding:16px;background:var(--off-white);margin-bottom:12px;max-height:200px;overflow-y:auto">${source.excerpt}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        ${source.tags.map(tag => `<span style="font-size:11px;padding:4px 10px;background:var(--gray-light);color:var(--black);border-radius:99px">${tag}</span>`).join('')}
+      </div>
+      <button onclick="useSource('${source.id}')" style="padding:10px 20px;background:var(--black);color:var(--white);border:none;font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;text-transform:uppercase;letter-spacing:1px">Use This Document</button>
+    </div>
+  `).join('');
+  
+  document.getElementById('sourceList').innerHTML = html;
+}
+
+function useSource(sourceId) {
+  // Find the source
+  const allSources = Object.values(PRIMARY_SOURCES).flat();
+  const source = allSources.find(s => s.id === sourceId);
+  
+  if (!source) return;
+  
+  // Store in temporary variable for tools to access
+  window.selectedSource = source;
+  
+  // Close library and show success message
+  closeSourceLibrary();
+  alert(`✓ Document loaded: "${source.title}"\n\nThis document is now ready to use in any tool. Open a tool (like Worksheet Generator or Primary Source Analysis) and the text will be pre-filled.`);
+}
+
+// Random NASA/Wikimedia Earth images
+const heroImages = [
+  'https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg', // Blue Marble - Apollo 17
+  'https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png', // Western Hemisphere
+  'https://upload.wikimedia.org/wikipedia/commons/c/cb/The_Blue_Marble_%28remastered%29.jpg', // Blue Marble Remastered
+  'https://upload.wikimedia.org/wikipedia/commons/5/5f/Earth_from_Space.jpg', // Earth from Space
+  'https://upload.wikimedia.org/wikipedia/commons/a/aa/NASA_Earth_America_2002.jpg', // Americas view
+  'https://upload.wikimedia.org/wikipedia/commons/e/e4/Eastern_Hemisphere_LamAz.png', // Eastern Hemisphere
+  'https://upload.wikimedia.org/wikipedia/commons/b/b4/The_Black_Marble_%E2%80%93_5_Suomi_NPP_orbits.jpg', // Black Marble (night)
+  'https://upload.wikimedia.org/wikipedia/commons/8/83/Equirectangular_projection_SW.jpg' // World map projection
+];
+
+// Set random image on page load
+const randomImage = heroImages[Math.floor(Math.random() * heroImages.length)];
+document.getElementById('heroImage').src = randomImage;
+
+// Background image rotation
+let bgIndex=0;
+setInterval(()=>{
+  const imgs=document.querySelectorAll('.bg-img');
+  imgs[bgIndex].classList.remove('active');
+  bgIndex=(bgIndex+1)%imgs.length;
+  imgs[bgIndex].classList.add('active');
+},8000);
+
+function showPage(pageId){
+  document.querySelectorAll('.landing,.course-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+pageId).classList.add('active');
+  document.querySelector(`.nav-btn[onclick*="${pageId}"]`).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function checkApiKey(){
+  const key=document.getElementById('apiKey').value.trim();
+  const status=document.getElementById('apiStatus');
+  if(key.startsWith('sk-ant-')&&key.length>20){status.textContent='Ready';status.className='api-status ok';}
+  else if(key.length>0){status.textContent='Invalid';status.className='api-status err';}
+  else{status.textContent='Enter key';status.className='api-status';}
+}
+
+function closeModal(){
+  document.getElementById('toolModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function handleOverlayClick(e){
+  if(e.target===document.getElementById('toolModal'))closeModal();
+}
+
+function copyOutput(){
+  const text=document.getElementById('modalOutput').innerText;
+  navigator.clipboard.writeText(text);
+  alert('Copied to clipboard');
+}
+
+function printOutput(){window.print();}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+</script>
+</body>
+</html>
